@@ -15,6 +15,6 @@ Github :
 Sampai saat ini projek ini masih terus saya kembangkan
 ------------------------------------------------------------------
 live demonya bisa di lihat di sini :
-http://kiosaya.000webhostapp.com/kiosaya/
+http://kiosaya.000webhostapp.com/reporting/
 Github : 
 https://github.com/SalatID/reporting-X/
