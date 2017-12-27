@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Reporting</title>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/bootstrap-datepicker.css">
+    <link rel="stylesheet" href="css/bootstrap-datepicker3.css">
+    <link rel="stylesheet" href="css/printPreview.css">
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/bootstrap.js"></script>
+    <script type="text/javascript" src="js/bootstrap-datepicker.js"></script>
+    <script src="js/Chart.bundle.js"></script>
+    <script src="js/Chart.js"></script>
+    <script type="text/javascript" src="js/xlsx.core.min.js"></script>
+    <script type="text/javascript" src="js/tableexport.js"></script>
+    <script type="text/javascript" src="js/jquery.table2excel.js"></script>
+    <script type="text/javascript" src="js/jquery.excelexport.js"></script>
+    <script type="text/javascript" src="js/pdfmake.min.js"></script>
+    <script type="text/javascript" src="js/vfs_fonts.js"></script>
+    <style media="screen">
+    .disabled {
+     pointer-events: none;
+     cursor: default;
+     background-color: #E6E6E6;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+		<div class="row">
+			<div class="headerReport">
+				<h1>REPORTING</h1>
+        <div class="alert alert-danger" >
+        </div>
+				<div class="typeOfReporting">
+				  <select class="form-control cmbTypeOfReporting" name="typeOfReporting">
+					<option value="">Type Of Report</option>
+				  </select>
+				</div>
+				<div class="input-group input-daterange">
+					<input type="text" class="form-control datePicker min" value="">
+					<div class="input-group-addon">to</div>
+					<input type="text" class="form-control datePicker max" value="">
+				</div>
+				<input type="button" class="btn btn-info send" value="Check">
+      </div>
+				  <div class="showData">
+					<div class="filterRow">
+					  <label for="">Filter Row :</label>
+					  <select class="rows">
+						<option value="5">5</option>
+						<option value="10">10</option>
+						<option value="15">15</option>
+            <option value="20">20</option>
+            <option value="25">25</option>
+						<option value="40">40</option>
+					  </select>
+					  <label for="">rows per page</label>
+					</div>
+				  <div class="input-group grubPagination" style="width : 10%; float : right">
+  					<a href="#" class="input-group-addon start clickAction" data-page="firstPage">First</a>
+  					<a href="#" class="input-group-addon start clickAction" data-page="previousPage"><</a>
+  					<input type="text" class="form-control currentPage" style="width : 50px;" value="">
+  					<label class="input-group-addon endPage">of 2</label>
+  					<a href="#" class="input-group-addon end clickAction" data-page="nextPage">></a>
+  					<a href="#" class="input-group-addon end clickAction" data-page="lastPage">Last</a>
+				  </div>
+				  <div class="reporting" style="margin-bottom:1%; width : 50%;">
+            <div class="dropdown">
+             <button style="float : left; margin : 5px" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Download
+             <span class="caret"></span></button>
+             <ul class="dropdown-menu">
+               <li class="dropdown-header"><label for="" style="text-align : center">From Server</label></li>
+               <li><a href="#" class="server" data-print="full" data-name="serverFullPDF">PDF</a></li>
+               <li><a href="#" class="server" data-print="full" data-name="serverFullExcel">Excel</a></li>
+               <li><a href="#" class="server" data-print="current" data-name="serverCurPDF">Current Page PDF</a></li>
+               <li><a href="#" class="server" data-print="current" data-name="serverCurExcel">Current Page Excel</a></li>
+               <li class="divider"></li>
+               <li class="dropdown-header"><label for="">From Client </label></li>
+               <li><a href="#" class="client" data-print="full" data-name="PDF">PDF</a></li>
+               <li><a href="#" class="client" data-print="full" data-name="excel">Excel</a></li>
+               <li><a href="#" class="client" data-print="current" data-name="PDF">Current Page PDF</a></li>
+               <li><a href="#" class="client" data-print="current" data-name="excel">Current Page Excel</a></li>
+             </ul>
+             <input style="margin: 5px;" type="button" class="btn btn-warning chart" value="View Chart">
+            </div>
+				  </div>
+
+			<div class="content">
+			  <div class="printPreview" style="padding: 2%; margin-bottom : 2%;">
+				<page size="A4" id="page">
+            <div id="divCurrentPage" style="height : 100%; position : relative;">
+              <div>
+                <h1 class="title" style="text-align:center; margin-top:-16px;margin-bottom : auto"></h1>
+              </div>
+              <table id="head" class="tableContent" border="0">
+  							<tr>
+  							  <th style="width : 20%;"></th>
+                  <th></th>
+  							  <th><img src="css/img/logo.png" style=" width:50px; height:auto; float:right;"/></th>
+  							</tr>
+  							<tr>
+  							  <th class="reportingAttribute">Jenis Reporting</th>
+  							  <td colspan="2" class="tipeOfReporting"></td>
+  							</tr>
+  							<tr>
+  							  <th class="reportingAttribute">Mulai Tanggal</th>
+  							  <td colspan="2" class="startDate"></td>
+  							</tr>
+  							<tr>
+  							  <th class="reportingAttribute">Sampai Tanggal</th>
+  							  <td colspan="2" class="endDate"></td>
+  							</tr>
+              </table>
+              <table border = '1' id="3"  style="width : 100%">
+                <thead class="tHeader">
+
+                </thead>
+  						  <tbody class="tContent" id="tContent">
+
+  						  </tbody>
+  						</table>
+              <div class="footerDocument" style="width : 100%; position : absolute; bottom : -35px;">
+                <label style="float :left;" class="labelGenDate"></label>
+                <label style="float :right;" class="labelPageNumb"></label>
+              </div>
+            </div>
+            <div id="divTableContent" style="display : none;">
+              <div>
+                <h1 class="title" style="text-align:center;"></h1>
+              </div>
+              <table id="1" class="tableContent" border="0" style="width : 100%">
+  							<tr>
+  							  <th colspan="2" style="text-align : left; background-color : #E6E6E6">Jenis Reporting</th>
+  							  <td class="tipeOfReporting"></td>
+  							</tr>
+  							<tr>
+  							  <th colspan="2" style="text-align : left; background-color : #E6E6E6">Mulai Tanggal</th>
+  							  <td class="startDate"></td>
+  							</tr>
+  							<tr>
+  							  <th colspan="2" style="text-align : left; background-color : #E6E6E6">Sampai Tanggal</th>
+  							  <td class="endDate"></td>
+  							</tr>
+                <tr>
+                  <th colspan="2" style="text-align : left; background-color : #E6E6E6">Generate Date</th>
+  							  <td class="labelGenDateHidden"></td>
+                </tr>
+                <tr>
+                  <td></td>
+                </tr>
+              </table>
+              <table id="2" border = '1' style="width : 100%">
+                <thead class="tHeaderHidden">
+
+                </thead>
+  						  <tbody class="tContentHidden" id="tContent">
+
+  						  </tbody>
+  						</table>
+              <!--<div class="footerDocument" style="width : 100%; position : absolute; bottom : -35px;">
+                <label style="float :left;" class="labelGenDate"></label>
+              </div>-->
+            </div>
+				</page>
+			</div><!--print preview -->
+      </div><!--Content -->
+      <input type="button" class="btn btn-info closeChart" value="Close Chart" style="z-index : initial; position : relative;">
+        <div class="chartCanvas">
+          <canvas id="canvasTrx"></canvas>
+          <canvas id="canvasClick"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  </body>
+</html>
+<script type="text/javascript" src="js/myJs/downloadClient.js"></script>
+<script type="text/javascript" src="js/myJs/convertToChart.js"></script>
+<script type="text/javascript" src="js/myJs/pagination.js"></script>
+<script type="text/javascript" src="js/myJs/getDataReporting.js"></script>
+<script type="text/javascript" src="js/myJs/download.js"></script>
+<script type="text/javascript" src="js/myJs/JSExcel.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.alert-danger').hide();
+  $('.reporting').hide();
+  $('.showData').hide();
+  $('.filterRow').hide();
+  $('.grubPagination').hide();
+  $('.chartCanvas').hide();
+  $('.closeChart').hide();
+    $.getJSON("page/firstLoad.php", function(result) {
+      //$('.content').html(JSON.stringify(result));
+    var cmbTypeOfReporting = $(".cmbTypeOfReporting");
+    //alert(result.response.success);
+    if (result.response.success=='true') {
+      $.each(result.response.TypeOfReporting, function() {
+          cmbTypeOfReporting.append($("<option />").val(this.id).text(this.name));
+      });
+      var cmbProvince = $(".cmbProvince");
+      $.each(result.response.Province, function() {
+          cmbProvince.append($("<option />").val(this.id).text(this.name));
+      });
+    }else {
+      alert('Oops!!, Something Wrong');
+    }
+  });
+  $('.client').click(function (e) {
+        var typeOfReportingId = $('.cmbTypeOfReporting').val();
+        var provinceId = $('.cmbProvince').val();
+        var cityId = $('.cmbCity').val();
+        var minDate = $('.min').val();
+        var maxDate = $('.max').val();
+        var convertReporting = {convertReportingStat : false, typeReporting : false};
+        var printingOption = $(this).data('print');
+        if (printingOption=='full') {
+          var offset = 1;
+          var rows = -1;
+        }else {
+          var page = ($('.currentPage').val()*1);
+          var rows = ($('.rows').val()*1);
+          var offset = ($('.currentPage').val()*1);
+        }
+        var name = $(this).data('name');
+        downloadClient(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting,page,printingOption,name);
+     });
+  $('.cmbTypeOfReporting').change(function(){
+    $('.showData').hide();
+  });
+  $('.input-daterange input').each(function() {
+    $(this).datepicker({
+      format: "yyyy-mm-dd",
+      autoclose:true
+    });
+  });
+  $('.send').click(function(){
+    var typeOfReportingId = $('.cmbTypeOfReporting').val();
+    var provinceId = $('.cmbProvince').val();
+    var cityId = $('.cmbCity').val();
+    var minDate = $('.min').val();
+    var maxDate = $('.max').val();
+    var rows = ($('.rows').val()*1);
+    var convertReporting = {convertReportingStat : false, typeReporting : false};
+    var offset = 1;
+    getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting);
+    $('#canvasClick').hide();
+    $('#canvasTrx').hide();
+    $('.closeChart').hide();
+    $('.printPreview').show();
+  });
+  $('.rows').change(function(){
+    var rows = ($(this).val()*1);
+    var typeOfReportingId = $('.cmbTypeOfReporting').val();
+    var provinceId = $('.cmbProvince').val();
+    var cityId = $('.cmbCity').val();
+    var minDate = $('.min').val();
+    var maxDate = $('.max').val();
+    var convertReporting = {convertReportingStat : false, typeReporting : false};
+    var offset = 1;
+    getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting);
+  });
+  $('.server').click(function(){
+    var name = $(this).data('name');
+    var page = ($('.currentPage').val()*1);
+    switch (name) {
+      case 'serverFullPDF':
+        var convertReporting = {convertReportingStat : true, typeReporting : 'pdf'};
+        var rows = -1;
+        var offset = 1;
+        break;
+      case 'serverFullExcel':
+        var convertReporting = {convertReportingStat : true, typeReporting : 'excel'};
+        var rows = -1;
+        var offset = 1;
+        break;
+      case 'serverCurExcel':
+        var convertReporting = {convertReportingStat : true, typeReporting : 'excel'};
+        var rows = ($('.rows').val()*1);
+        var offset = ($('.currentPage').val()*1);
+        break;
+      case 'serverCurPDF':
+        var convertReporting = {convertReportingStat : true, typeReporting : 'pdf'};
+        var rows = ($('.rows').val()*1);
+        var offset = ($('.currentPage').val()*1);
+        break;
+      default:
+    }
+    var typeOfReportingId = $('.cmbTypeOfReporting').val();
+    var provinceId = $('.cmbProvince').val();
+    var cityId = $('.cmbCity').val();
+    var minDate = $('.min').val();
+    var maxDate = $('.max').val();
+    download(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting);
+  });
+  $('.chart').click(function(){
+    $('.chartCanvas').hide();
+    var typeOfReportingId = $('.cmbTypeOfReporting').val();
+    var provinceId = $('.cmbProvince').val();
+    var cityId = $('.cmbCity').val();
+    var minDate = $('.min').val();
+    var maxDate = $('.max').val();
+    var rows = ($('.rows').val()*1);
+    var page = ($('.currentPage').val()*1);
+    var convertReporting = {convertReportingStat : true, typeReporting : 'chart'};
+    var offset = ($('.currentPage').val()*1);
+    $('.closeChart').show();
+    $('.printPreview').hide();
+    getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting);
+    //$('.server').addClass('disabled');
+  });
+  $('.closeChart').click(function(){
+    $('#canvasClick').hide();
+    $('#canvasTrx').hide();
+    $('.closeChart').hide();
+    $('.showData').hide();
+    $('.chartjs-hidden-iframe').remove();
+  });
+  $('.clickAction').click(function(){
+    var currentPage = ($('.currentPage').val()*1);
+    var buttonName = $(this).data('page');
+    switch(buttonName) {
+    case 'firstPage':
+        var page = 1
+        break;
+    case 'previousPage':
+        var page = ((currentPage * 1)-1)
+        break;
+    case 'nextPage':
+        var page = ((currentPage * 1)+1)
+        break;
+    case 'lastPage':
+        var page = totalPage.totalPage
+        break;
+    default:
+        var page = 1
+    }
+    if ($('.chartCanvas').is(':visible')) {
+      $('.chartCanvas').hide();
+      var convertReporting = {convertReportingStat : true, typeReporting : 'chart'};
+    }else {
+      var convertReporting = {convertReportingStat : false, typeReporting : false};
+    }
+    var typeOfReportingId = $('.cmbTypeOfReporting').val();
+    var provinceId = $('.cmbProvince').val();
+    var cityId = $('.cmbCity').val();
+    var minDate = $('.min').val();
+    var maxDate = $('.max').val();
+    var rows = ($('.rows').val()*1);
+    //var page = ((currentPage * 1)-1);
+    pagination(page, totalPage);
+    var offset = ($('.currentPage').val()*1);
+    getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting,page);
+  });
+  $('.currentPage').keypress(function(event){
+    if(event.keyCode == 13){
+      if (page <= totalPage.totalPage) {
+        var typeOfReportingId = $('.cmbTypeOfReporting').val();
+        var provinceId = $('.cmbProvince').val();
+        var cityId = $('.cmbCity').val();
+        var minDate = $('.min').val();
+        var maxDate = $('.max').val();
+        var rows = ($('.rows').val()*1);
+        var convertReporting = {convertReportingStat : false, typeReporting : false};
+        var currentPage = ($('.currentPage').val()*1);
+        var page = $(this).val();
+        var offset = ($('.currentPage').val()*1);
+        getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting,page);
+        pagination(page, totalPage);
+      }else {
+      //alert('Oops!!! Something Wrong');
+      var typeOfReportingId = $('.cmbTypeOfReporting').val();
+      var provinceId = $('.cmbProvince').val();
+      var cityId = $('.cmbCity').val();
+      var minDate = $('.min').val();
+      var maxDate = $('.max').val();
+      var rows = ($('.rows').val()*1);
+      var convertReporting = {convertReportingStat : false, typeReporting : false};
+      var currentPage = ($('.currentPage').val()*1);
+      var page = totalPage.totalPage;
+      var offset = ($('.currentPage').val()*1);
+      getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting,page);
+      pagination(page, totalPage);
+      }
+    }
+  });
+});
+</script>

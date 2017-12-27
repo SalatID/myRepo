@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Reporting</title>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/bootstrap-datepicker.css">
+    <link rel="stylesheet" href="css/bootstrap-datepicker3.css">
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/bootstrap.js"></script>
+    <script type="text/javascript" src="js/bootstrap-datepicker.js"></script>
+    <script src="js/Chart.bundle.js"></script>
+    <script src="js/Chart.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <h1>REPORTING</h1>
+        <div class="typeOfReporting">
+          <select class="form-control cmbTypeOfReporting" name="typeOfReporting">
+            <option value="">Type Of Report</option>
+          </select>
+        </div>
+        <div class="location">
+          <select class="form-control cmbProvince" name="location">
+            <option value="">Province</option>
+          </select>
+          <select class="form-control cmbCity" name="location">
+            <option value="">City</option>
+          </select>
+        </div>
+        <div class="input-group input-daterange">
+            <input type="text" class="form-control datePicker min" value="">
+            <div class="input-group-addon">to</div>
+            <input type="text" class="form-control datePicker max" value="">
+        </div>
+        <input type="button" class="btn btn-info send" value="Check">
+        <div class="content">
+          <div class="testing">
+
+          </div>
+          <div class="filter">
+            <div class="filterRow">
+              <label for="">Filter Row :</label>
+              <select class="rows">
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+              </select>
+              <label for="">rows per page</label>
+            </div>
+          </div>
+          <table class="table table-bordered">
+            <tr class="tableField">
+
+            </tr>
+          </table>
+          <input type="button" class="btn btn-info closeChart" value="Close Chart">
+          <div class="chartCanvas">
+            <canvas id="canvasTrx"></canvas>
+            <canvas id="canvasClick"></canvas>
+          </div>
+          <div class="grubPagination" style="float: right">
+            <ul class="pagination">
+								<!-- LINK FIRST AND PREV -->
+										<li class="first disabled"><a href="#">First</a></li>
+										<li class="first disabled"><a href="#">&laquo;</a></li>
+                    <li class="pageNumber"><!--<a class="aPageNumber" href="#">1</a>--></li>
+										<li class="last disabled start"><a href="#">&raquo;</a></li>
+										<li class="last disabled"><a href="#">Last</a></li>
+						</ul>
+          </div>
+          <div class="reporting">
+            <input type="button" class="btn btn-danger pdf" value="Convert to PDF">
+            <input type="button" class="btn btn-info excel" value="Convert to Excel">
+            <input type="button" class="btn btn-warning chart" value="View Chart">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="downloadContainer">
+
+    </div>
+  </body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+  function convertReportingToChart(result){
+    $('#canvasClick').hide();
+    $('#canvasTrx').show();
+    var label = new Array;
+    var data = new Array;
+    var backgroundColor = new Array;
+    var borderColor = new Array;
+    $.each(result.response.data, function(e){ label [e]=this.paymentDate});
+    $.each(result.response.data, function(e){ data [e]=this.totalPayment});
+    for (var i = 0; i < result.response.totalRow; i++) {
+      backgroundColor [i]='rgba(255, 99, 132, 0.2)';
+      i++;
+      backgroundColor [i]='rgba(54, 162, 235, 0.2)';
+      i++;
+      backgroundColor [i]='rgba(255, 206, 86, 0.2)';
+      i++;
+      backgroundColor [i]='rgba(75, 192, 192, 0.2)';
+      i++;
+      backgroundColor [i]='rgba(153, 102, 255, 0.2)';
+      i++;
+      backgroundColor [i]='rgba(255, 159, 64, 0.2)';
+    }
+    for (var i = 0; i < result.response.totalRow; i++) {
+      borderColor [i]='rgba(255,99,132,1)';
+      i++;
+      borderColor [i]='rgba(54, 162, 235, 1)';
+      i++;
+      borderColor [i]='rgba(255, 206, 86, 1)';
+      i++;
+      borderColor [i]='rgba(75, 192, 192, 1)';
+      i++;
+      borderColor [i]='rgba(153, 102, 255, 1)';
+      i++;
+      borderColor [i]='rgba(255, 159, 64, 1)';
+    }
+    console.log(backgroundColor);
+    console.log(data);
+    var ctx = document.getElementById("canvasTrx");
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: label,
+            datasets: [{
+                    label: '# of Votes',
+                    data: data,
+                    backgroundColor: backgroundColor,
+                    borderColor: borderColor,
+                    borderWidth: 1
+                }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+            }
+        }
+    });
+    pagination(page, totalPage);
+  }
+  function convertClickToChart(result){
+    $('#canvasTrx').hide();
+    $('#canvasClick').show();
+    var label = new Array;
+    var data = new Array;
+    $.each(result.response.data, function(e){ label [e]=this.date});
+    $.each(result.response.data, function(e){ data [e]=this.totalClick});
+    console.log(data);
+    var ctx = document.getElementById("canvasClick");
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: label,
+            datasets: [{
+                    label: '# of Votes',
+                    data: data,
+                    pointBackgroundColor: 'rgba(255,0,4,1)',
+                    borderWidth: 1
+                }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+            }
+        }
+    });
+    pagination(page, totalPage);
+  }
+  function download(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting,page=1){
+    var param = {request : { 0 : {typeOfReportingId : typeOfReportingId,provinceId : provinceId, cityId : cityId, minDate : minDate, maxDate : maxDate, rows : rows, offset : offset, convertReporting : convertReporting}}};
+    page = page;
+    $.ajax({
+      type	: 'GET',
+      url 	: 'page/convert.php',
+      data 	: 'request='+JSON.stringify(param),
+      success	: function(data, status, request){
+        //alert(this.url);
+        window.open(this.url);
+        console.log(result);
+      }
+    });
+  }
+  function getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting,page=1){
+    var param = {request : { 0 : {typeOfReportingId : typeOfReportingId,provinceId : provinceId, cityId : cityId, minDate : minDate, maxDate : maxDate, rows : rows, offset : offset, convertReporting : convertReporting}}};
+    //alert(JSON.stringify(param));
+    page = page;
+    $.ajax({
+      type	: 'POST',
+      async : false,
+      url 	: 'page/getDataReporting.php',
+      contentType: "application/json; charset=utf-8",
+      data 	: JSON.stringify({param}),
+      dataType : 'json',
+      success	: function(result){
+        var tableField = $('.table');
+        if (result.response.success=='true') {
+          if (convertReporting.typeReporting == 'chart') {
+            if (typeOfReportingId==1){
+              convertReportingToChart(result);
+            }else if (typeOfReportingId==2) {
+              convertClickToChart(result);
+            }
+          }else if (typeOfReportingId==1) {
+            $(".tableField").remove();
+            html='<tr class="tableField">'
+             + '<th>NO</th>'
+             + '<th>Contract Id</th>'
+             + '<th>Payment Date</th>'
+             + '<th>Total Payment</th>'
+             + '<th>Curency Code</th>'
+             + '</tr>';
+             tableField.append(html);
+            $.each(result.response.data, function(e) {
+              html='<tr class="tableField">'
+               + '<td>'+((e+1)+offset)+'</td>'
+               + '<td>'+this.contractId+'</td>'
+               + '<td>'+this.paymentDate+'</td>'
+               + '<td>'+this.totalPayment+'</td>'
+               + '<td>'+this.curencyCode+'</td>'
+               + '</tr>';
+              tableField.append(html);
+              //tableField.append('<td>'+this.contractId+'</td></tr>');
+            });
+          }else if (typeOfReportingId==2) {
+            $(".tableField").remove();
+            html='<tr class="tableField">'
+             + '<th>NO</th>'
+             + '<th>Ads Id</th>'
+             + '<th>Date</th>'
+             + '<th>Total Click </th>'
+             + '</tr>';
+             tableField.append(html);
+            $.each(result.response.data, function(e) {
+              html='<tr class="tableField">'
+               + '<td>'+((e+1)+offset)+'</td>'
+               + '<td>'+this.adsId+'</td>'
+               + '<td>'+this.date+'</td>'
+               + '<td>'+this.totalClick+'</td>'
+               + '</tr>';
+              tableField.append(html);
+              //tableField.append('<td>'+this.contractId+'</td></tr>');
+            });
+          }
+          $('.reporting').show();
+          $('.filterRow').show();
+          $('.pagination').show();
+          $('.aPageNumber').remove();
+          var totalRow = result.response.totalRow;
+          var totalPage = {totalPage : Math.ceil(totalRow/rows)};
+          var start = $('.start');
+          //alert(totalRow+"-"+JSON.stringify(totalPage));
+          var i;
+          html = '';
+          for (var i = 0; i < totalPage.totalPage; i++) {
+            if (page==(i+1)) {
+              html+='<li class="pageNumber active"><a class="aPageNumber active" href="#">'+(i+1)+'</a></li>';
+            }else {
+              html+='<li class="pageNumber"><a class="aPageNumber active" href="#">'+(i+1)+'</a></li>';
+            }
+          };
+          start.before(html);
+          //var offset = 0;
+          pagination(page, totalPage);
+
+          $('.pageNumber').click(function(e){
+          var page = $(this).text();
+          var offset = (($(this).text()-1)*rows);
+          //alert (JSON.stringify(totalPage));
+          getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting,page);
+          pagination(page, totalPage);
+          $(this).closest('li').addClass("active");
+
+          });
+          $('.first').click(function(){
+            var page = 1;
+            var offset = ((1-1)*rows);
+            //alert (JSON.stringify(totalPage));
+            getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting,page);
+            pagination(page, totalPage);
+          });
+          $('.last').click(function(){
+            var page = totalPage.totalPage;
+            var offset = ((totalPage.totalPage-1)*rows);
+            //alert (JSON.stringify(totalPage));
+            getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting,page);
+            pagination(page, totalPage);
+          });
+        }else {
+          alert('Oops!!, Something Wrong');
+        }
+
+      }
+    });
+  }
+  function pagination(page, totalPage){
+    var page = page;
+    var totalPage = totalPage;
+    if (page==1 && page >= totalPage.totalPage) {
+      $('ul li.last').addClass("disabled");
+      $('ul li.first').addClass("disabled");
+    }
+    else if (page >= totalPage.totalPage) {
+      $('ul li.last').addClass("disabled");
+      $('ul li.first').removeClass("disabled");
+    } else if (page == 1) {
+      $('ul li.first').addClass("disabled");
+      $('ul li.last').removeClass("disabled");
+    } else {
+      $('ul li.last').removeClass("disabled");
+      $('ul li.first').removeClass("disabled");
+    }
+  }
+  $('.reporting').hide();
+  $('.filterRow').hide();
+  $('.pagination').hide();
+  $('.chartCanvas').hide();
+  $('.closeChart').hide();
+    $.getJSON("page/firstLoad.php", function(result) {
+      //$('.content').html(JSON.stringify(result));
+    var cmbTypeOfReporting = $(".cmbTypeOfReporting");
+    //alert(result.response.success);
+    if (result.response.success=='true') {
+      $.each(result.response.TypeOfReporting, function() {
+          cmbTypeOfReporting.append($("<option />").val(this.id).text(this.name));
+      });
+      var cmbProvince = $(".cmbProvince");
+      $.each(result.response.Province, function() {
+          cmbProvince.append($("<option />").val(this.id).text(this.name));
+      });
+    }else {
+      alert('Oops!!, Something Wrong');
+    }
+  });
+  $('.cmbProvince').change(function(){
+    var cmbProvinceVal = $(this).val();
+    var param = {post : {provincesId : cmbProvinceVal}};
+    //alert(JSON.stringify(param))
+    $.ajax({
+      type	: 'POST',
+      url 	: 'page/getDataReporting.php',
+      data 	: 'provincesId='+JSON.stringify(param),
+      dataType : 'json',
+      success	: function(result){
+        //alert(JSON.stringify(result));
+        //$('.testing').html(JSON.stringify(result.post));
+        var cmbCity = $('.cmbCity');
+        $(".cmbCityOpt").remove();
+        if (result.response.success=='true') {
+          $.each(result.response.data, function() {
+              cmbCity.append($("<option />").val(this.id).text(this.name).attr('class','cmbCityOpt' ));
+          });
+        } else {
+          alert('Oops!!, Something Wrong');
+        }
+
+      }
+    });
+  });
+  $('.input-daterange input').each(function() {
+    $(this).datepicker({
+      format: "yyyy-mm-dd",
+      autoclose:true
+    });
+  });
+
+  $('.send').click(function(){
+    var typeOfReportingId = $('.cmbTypeOfReporting').val();
+    var provinceId = $('.cmbProvince').val();
+    var cityId = $('.cmbCity').val();
+    var minDate = $('.min').val();
+    var maxDate = $('.max').val();
+    var rows = $('.rows').val();
+    var convertReporting = {convertReportingStat : false, typeReporting : false};
+    var offset = 0;
+    getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting);
+    $('#canvasClick').hide();
+    $('#canvasTrx').hide();
+    $('.closeChart').hide();
+  });
+  $('.rows').change(function(){
+    var rows = $(this).val();
+    var typeOfReportingId = $('.cmbTypeOfReporting').val();
+    var provinceId = $('.cmbProvince').val();
+    var cityId = $('.cmbCity').val();
+    var minDate = $('.min').val();
+    var maxDate = $('.max').val();
+    var convertReporting = {convertReportingStat : false, typeReporting : false};
+    var offset = 0;
+    getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting);
+  });
+  $('.pdf').click(function(){
+    var typeOfReportingId = $('.cmbTypeOfReporting').val();
+    var provinceId = $('.cmbProvince').val();
+    var cityId = $('.cmbCity').val();
+    var minDate = $('.min').val();
+    var maxDate = $('.max').val();
+    var rows = null;
+    var convertReporting = {convertReportingStat : true, typeReporting : 'pdf'};
+    var offset = 0;
+    download(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting);
+  });
+  $('.excel').click(function(){
+    var typeOfReportingId = $('.cmbTypeOfReporting').val();
+    var provinceId = $('.cmbProvince').val();
+    var cityId = $('.cmbCity').val();
+    var minDate = $('.min').val();
+    var maxDate = $('.max').val();
+    var rows = null;
+    var convertReporting = {convertReportingStat : true, typeReporting : 'excel'};
+    var offset = 0;
+    download(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting);
+    //$.get('/reporting/page/convertToPDF.php');
+  });
+  $('.chart').click(function(){
+    var typeOfReportingId = $('.cmbTypeOfReporting').val();
+    var provinceId = $('.cmbProvince').val();
+    var cityId = $('.cmbCity').val();
+    var minDate = $('.min').val();
+    var maxDate = $('.max').val();
+    var rows = null;
+    var convertReporting = {convertReportingStat : true, typeReporting : 'chart'};
+    var offset = 0;
+    $('.chartCanvas').show();
+    $('.closeChart').show()
+    getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting);
+  });
+  $('.closeChart').click(function(){
+    $('#canvasClick').hide();
+    $('#canvasTrx').hide();
+    $('.closeChart').hide()
+  });
+});
+</script>

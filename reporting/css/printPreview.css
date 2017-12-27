@@ -1,0 +1,118 @@
+.printPreview {
+  /*background: rgb(204,204,204);*/
+  background-color: #EEEEEE;
+
+}
+page {
+background: white;
+display: block;
+margin: 0 auto;
+margin-bottom: 0.5cm;
+box-shadow: 0 0 0.5cm rgba(0,0,0,0.5);
+}
+page[size="A4"] {
+width: 21cm;
+height: 29.7cm;
+padding: 1cm;
+}
+page[size="A4"][layout="portrait"] {
+width: 29.7cm;
+height: 21cm;
+}
+page[size="A3"] {
+width: 29.7cm;
+height: 42cm;
+}
+page[size="A3"][layout="portrait"] {
+width: 42cm;
+height: 29.7cm;
+}
+page[size="A5"] {
+width: 14.8cm;
+height: 21cm;
+}
+page[size="A5"][layout="portrait"] {
+width: 21cm;
+height: 14.8cm;
+}
+.pannel{
+	margin : 0.5% auto;
+	width: 550px;
+}
+.printProperty{
+	vertical-align: middle;
+	float: left;
+	width: 270px;
+}
+.startPage, .endPage{
+	width: 40px;
+	height: 30px;
+	border-radius: 4px;
+}
+.printPage{
+	vertical-align: middle;
+	width: 70px;
+	margin: 0 5px 5px;
+}
+.printButton{
+	float: right;
+	position: fixed;
+	top: 10px;
+	right: 10px;
+}
+@media print {
+body, page {
+  margin: 0;
+  box-shadow: 0;
+}
+}
+
+.headerReport{
+	margin: auto;
+
+}
+.headerTitle{
+	float: left;
+	width: 100%;
+}
+.headerTitle p{
+	font-size: 28px;
+	text-align: center;
+}
+.headerLogo{
+	float: right;
+}
+.headerLogo img{
+	width: 80px;
+	height: auto;
+}
+.headerDetail{
+	float: left;
+	margin-bottom: 20px;
+}
+.headerDetail tr > td{
+	padding-left: 15px;
+}
+.content{
+	margin: 0 auto;
+	position: fixed;
+	overflow: auto;
+	height: calc(100% - 270px);
+	width: 85%;
+}
+.disabled {
+ pointer-events: none;
+ cursor: default;
+}
+.headerTable{
+  text-align: center;
+  height: 35px;
+  background-color: #7AD7FF;
+}
+.reportingAttribute{
+  background-color: #E6E6E6;
+}
+.tableContent{
+  margin-bottom: 10px;
+  width: 100%;
+}
