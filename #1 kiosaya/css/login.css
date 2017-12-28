@@ -1,0 +1,101 @@
+
+#bannerHeader{
+	margin: auto;
+}
+#bannerHeader img{
+	width: 100%;
+	height: auto;
+	background: #ABC6FC;
+	margin: 5px auto;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#box {
+	background-image: url("img/login-background.jpg");
+	background-size: cover;
+	width: auto;
+	padding-bottom: 180px;
+}
+.header_isi {
+	margin-left: auto;
+	margin-right: auto;
+	width: 335px;
+	height: 230px;
+	padding: 180px 0px 90px 80px;
+}
+
+.inputform {
+	background-color: rgba(170, 114, 123 ,0.6);
+	height: 330px;
+	border: 2px solid rgba(170, 114, 123 ,1);
+	margin-left: auto;
+	margin-right: auto;
+}
+
+ img {
+	margin-left: 70px;
+	position:  sticky;
+}
+
+.login_regis {
+	height: 40px;
+	width: 260px;
+	text-align: center;
+	color: white;
+	font-size: 17px;
+	border-radius: 8px;
+	background-color: rgba(225, 255, 255, 0.4);
+	border: 3px solid #0288D1;
+	margin-top: 10px;
+}
+
+.tombol_login {
+	width: 260px;
+	height: 30px;
+	text-align: center;
+	background-color: #0288D1;
+	color: white;
+	font-size: 17px;
+	border: 2px solid #0288D1;
+	border-radius: 8px;
+	margin-top: 20px;
+	position: relative;
+	color: #fff;
+	text-decoration: none;
+	display: block;
+}
+
+
+.login_regis:hover {
+	border: 3px solid #fff;
+}
+
+.tombol_login:hover {
+	background-color: white;
+	color: #0288D1;
+	border: 2px solid white;
+}
+.daftar{
+	color: #fff;
+
+}
+ul.navbar {
+	position: relative;
+	text-align: center;
+}
+ul.navbar li {
+	display: inline-block;
+	padding:15px 0;
+	height:50px;
+}
+ul.navbar li a{
+	text-align: center;
+	padding:17px 10px;
+	font-size: 14px;
+	color:#eee;
+	text-decoration: none;
+}
+ul.navbar li.active a {
+	background-color: #44D33D;
+}

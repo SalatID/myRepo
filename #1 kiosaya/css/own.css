@@ -1,0 +1,57 @@
+
+.centerAlign{
+	text-align: center;
+}
+.inputSumbitA{
+	background: none;
+  border: none;
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+.fsAdsTitle a{
+ color: black;
+ text-transform: uppercase;
+ text-shadow:0px 5px 10px black;
+ font-family:  'Arial Black';
+}
+.fsAdsTitle{
+ 	width: 100%;
+	position: relative;
+  margin: 3% 0;
+	text-align: center;
+	text-transform: uppercase;
+
+}
+.myDivAds{
+	border: solid;
+	border-radius: 20px;
+	border-color: #eee;
+	float: right;
+	width: 100%;
+
+	padding:3%;
+}
+.imagesAds{
+	border: solid;
+	border-color: #eee;
+	max-height: 300px;
+}
+.activeSlot{
+	text-align : center;
+	color : #fff;
+	float : right;
+	border-radius : 10px;
+	background-color : #5BC0DE;
+	width: 23%;
+	height : 5%;
+}
+.expiredSlot{
+	text-align : center;
+	color : #fff;
+	float : right;
+	border-radius : 10px;
+	background-color : red;
+	width: 23%;
+	height : 5%;
+}

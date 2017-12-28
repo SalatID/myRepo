@@ -1,0 +1,45 @@
+body{
+  background: #E6E6E6;
+  font : 12px arial;
+}
+#container {
+  width : 100%;
+  margin: 0 auto;
+}
+#header {
+  background-color: #6699FF;
+  height: 100px;
+}
+#header img {
+  padding: 15px;
+  float: left;
+}
+#menu {
+  background: #ABC6FC;
+  height: 100px;
+}
+#body-content{
+  width: 800px;
+  margin: 0 auto;
+}
+/*Menu*/
+#menu ul{
+  margin: 0;
+  padding: 0;
+}
+#menu ul.right{
+  float: right;
+}
+#menu ul li{
+  float: left;
+  list-style: none;
+}
+#menu ul li a{
+  display: block;
+  padding: 8px 15px;
+  text-decoration: none;
+  color: #ddd;
+}
+#menu ul li a:hover{
+  background: #40569e;
+}
