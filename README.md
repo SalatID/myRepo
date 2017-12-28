@@ -11,7 +11,9 @@ live demonya bisa di lihat di sini :
 http://kiosaya.000webhostapp.com/reporting/
 </br>
 -----------------------------------------------------------------
-<strong> #3  |</strong> <p> untuk projek ketiga saya yaitu membuat sitem reporting menggunakan JSON, JQuery, dan PHP, dengan memisahkan server side dengan client side., projek ini juga saya rancang sebagai tugas saat saya melakukang magang di PT. Gemanusa Sentra Teknologi. Sampai saat ini projek ini masih terus saya kembangkan. </p>
------------------------------------------------------------------- </br>
+<strong> #3  |</strong> <p> untuk projek ketiga saya yaitu membuat sitem reporting menggunakan JSON, JQuery, dan PHP, dengan memisahkan server side dengan client side., projek ini juga saya rancang sebagai tugas saat saya melakukang magang di PT. Gemanusa Sentra Teknologi. Sampai saat ini projek ini masih terus saya kembangkan</p>
+------------------------------------------------------------------
 live demonya bisa di lihat di sini :
 http://kiosaya.000webhostapp.com/reporting/
+</br>
+------------------------------------------------------------------
