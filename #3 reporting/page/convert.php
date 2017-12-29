@@ -33,7 +33,7 @@ if ($valueParam['convertReporting']['convertReportingStat']==true) {
 }
 }
 function convertToPDF($typeOfReporting, $dataCell,$offset){
-  require_once ("../fpdf/fpdf.php");
+  require_once ("../lib/fpdf/fpdf.php");
   class PDF extends FPDF
 {
     function Footer()
