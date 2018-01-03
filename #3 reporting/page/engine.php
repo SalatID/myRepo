@@ -41,17 +41,17 @@
     class reporting
     {
       private $db;
-      function selectTrx($minDate, $maxDate,$offset,$rows){
+      function selectTrx($minDate,$maxDate,$offset,$rows,$order=null){
         $this->db = new config();
         $table  ="payment";
         $field   = "*";
         $where  = "(paymentDate) between '$minDate' and '$maxDate' ";
-        $this->db->select($table,$field,$on=null,$where,$group=null,$order=null);
+        $this->db->select($table,$field,$on=null,$where,$group=null,$order);
         $result = $this->db->getResult();
         $decode = json_decode($result,true);
         $totalRow = $decode['response'];
         $limit = $rows != -1 ? $offset.', '.$rows : $offset;
-        $this->db->select($table,$field,$on=null,$where,$group=null,$order=null,$limit);
+        $this->db->select($table,$field,$on=null,$where,$group=null,$order,$limit);
         $result = $this->db->getResult();
         $decode = json_decode($result,true);
         $rowTrx = $decode['response'];
@@ -60,10 +60,16 @@
           if ($minDate != null && $maxDate != null) {
             if ($minDate <= $maxDate) {
               if (count($rowTrx)!=0) {
+                $order = explode(' ',$order);
+                $icon = $order[1] == 'ASC' ? 'fa fa-sort-asc' : 'fa fa-sort-desc';
                 $error =0;
                 $generateDate = date('Y-m-d H:i:s ').'GMT'.date('P');
                 $title = 'LAPORAN DATA TRANSAKSI IKLANINAJA.COM';
-                $arrayHeader = array ("col1"=>"NO", "col2"=>"CONTRACT ID", "col3"=>"PAYMENT DATE", "col4"=>"TOTAL PAYMENT");
+                $arrayHeader = array ();
+                $arrayHeader = array (array("col"=>"NO","fieldName"=>"id"),
+                                      array("col"=>"CONTRACT ID","fieldName"=>"contractId"),
+                                      array("col"=>"PAYMENT DATE","fieldName"=>"paymentDate"),
+                                      array("col"=>"TOTAL PAYMENT","fieldName"=>"totalPayment"));
                 $dataArray = array('response'=>
                                   array('error'=>$error,
                                         'totalRow'=>count($totalRow),
@@ -74,6 +80,9 @@
                                                               'title'=>$title,
                                                               'generateDate'=>$generateDate,
                                                               'typeOfReporting'=> 'Transaction'),
+                                        'order'=>array('fieldName'=>$order[0],
+                                                       'type'=>$order[1],
+                                                       'icon'=>$icon),
                                         'tableHeader'=>$arrayHeader,
                                         'data'=>$rowTrx)
                                     );
@@ -114,11 +123,10 @@
         $result = json_encode($dataArray);
         return $result;
         }
-      function selectClick($minDate, $maxDate,$offset,$rows=null){
+      function selectClick($minDate, $maxDate,$offset,$rows=null,$order=null){
         $this->db = new config();
         $table  ="countclick";
         $field   = "*, substring(date,-19,10) as date";
-        $order  = "substring(date,-19,10) asc";
         $where  = "(substring(date,-19,10)) between '$minDate' and '$maxDate' ";
         $group = "adsId, substring(date,-19,10)";
         $this->db->select($table,$field,$on=null,$where,$group,$order);
@@ -153,8 +161,14 @@
                   $arrayData [$i]['totalClick'] = count($rowCountClick);
                   $i++;
                 }
+                $order = explode(' ',$order);
+                //print_r($order);die;
+                $icon = $order[1] == 'ASC' ? 'fa fa-sort-asc' : 'fa fa-sort-desc';
                 $title = 'LAPORAN TOTAL CLICK IKLANINAJA.COM';
-                $arrayHeader = array ("col1"=>"NO", "col2"=>"ADS ID", "col3"=>"DATE", "col4"=>"TOTAL CLICK");
+                $arrayHeader = array (array("col"=>"NO","fieldName"=>"id"),
+                                      array("col"=>"ADS ID","fieldName"=>"adsId"),
+                                      array("col"=>"DATE","fieldName"=>"date"),
+                                      array("col"=>"TOTAL CLICK","fieldName"=>"totalClick"));
                 $dataArray = array('response'=>
                                       array('error'=>$error,
                                             'totalRow'=>count($totalRow),
@@ -165,6 +179,9 @@
                                                                   'title'=>$title,
                                                                   'generateDate'=>$generateDate,
                                                                   'typeOfReporting'=> 'Total Click'),
+                                            'order'=>array('fieldName'=>$order[0],
+                                                           'type'=>$order[1],
+                                                           'icon'=>$icon),
                                             'tableHeader'=>$arrayHeader,
                                             'data'=>$arrayData));
 

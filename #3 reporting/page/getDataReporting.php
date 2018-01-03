@@ -19,14 +19,16 @@
           $minDate = $param['filter']['minDate'];
           $rows = $param['limit']['rows'];
           $offset = (($param['limit']['offset']-1)*$rows);
-          $result = $reporting->selectTrx($minDate,$maxDate,$offset,$rows);
+          $order = $param['order']['fieldName'].' '.$param['order']['type'];
+          $result = $reporting->selectTrx($minDate,$maxDate,$offset,$rows,$order);
           print_r($result);
         }elseif ($param['typeOfReportingId']==2) {
           $maxDate = $param['filter']['maxDate'];
           $minDate = $param['filter']['minDate'];
           $rows = $param['limit']['rows'];
           $offset = (($param['limit']['offset']-1)*$rows);
-          $result = $reporting->selectClick($minDate,$maxDate,$offset,$rows);
+          $order = $param['order']['fieldName'].' '.$param['order']['type'];
+          $result = $reporting->selectClick($minDate,$maxDate,$offset,$rows,$order);
           print_r($result);
           //file_put_contents($file, $result);
         }

@@ -1,4 +1,4 @@
-function getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting,page=1){
+function getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting,orders,page=1){
   var param = {request : {
                   typeOfReportingId : typeOfReportingId,
                   filter : {
@@ -7,8 +7,9 @@ function getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,ro
                   },
                   limit:{
                     rows : rows,
-                    offset : offset,
+                    offset : offset
                   },
+                  order : orders,
                   properties : convertReporting}};
   //alert(JSON.stringify(param));
   page = page;
@@ -60,19 +61,35 @@ function getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,ro
         $('.startDate').text(': '+result.response.docAttribute.startDate);
         $('.endDate').text(': '+result.response.docAttribute.endDate);
         $('.title').text(result.response.docAttribute.title);
-        html='<tr class="tableField">'
-         + '<th class="headerTable">'+result.response.tableHeader.col1+'</th>'
-         + '<th class="headerTable" >'+result.response.tableHeader.col2+'</th>'
-         + '<th class="headerTable">'+result.response.tableHeader.col3+'</th>'
-         + '<th class="headerTable">'+result.response.tableHeader.col4+'</th>'
-         + '</tr>';
+        //var sortIcon = result.response.order.type=='ASC' ? 'fa fa-sort-asc' : 'fa fa-sort-desc';
+          var th = '';
+          $.each(result.response.tableHeader, function(e) {
+           if (result.response.order.fieldName == 'id' || result.response.order.fieldName !== this.fieldName) {
+             th += '<th class="headerTable" data-id="'+this.fieldName+'" order="ASC">'+this.col+'</th>';
+           }else if (result.response.order.fieldName == this.fieldName) {
+             th += '<th class="headerTable" data-id="'+this.fieldName+'" order="ASC">'+this.col+'<i class="icons '+result.response.order.icon+'" aria-hidden="true"></i></th>';
+           }
+         })
+         html='<tr class="tableField">'+th+'</tr>';
          tHeader.append(html);
+         order = result.response.order;
         $('.reporting').show();
         $('.filterRow').show();
         $('.grubPagination').show();
         $('.showData').show();
         $('.content').show();
         $('.aPageNumber').remove();
+        //alert('bawah'+JSON.stringify(orders));
+        $('.headerTable').click(function(){
+          var fieldName = $(this).data('id');
+          if (result.response.order.type=='ASC') {
+            var orders = {fieldName : fieldName, type : 'DESC'};
+          }else {
+            var orders = {fieldName : fieldName, type : 'ASC'};
+          }
+          //var orders = {fieldName : fieldName, type : 'ASC'};
+          getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting,orders,page);
+        });
         var totalRow = result.response.totalRow;
         totalPage = {totalPage : Math.ceil(totalRow/rows)};
         //alert('totalPage'+JSON.stringify(totalPage));
