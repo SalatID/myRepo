@@ -1,0 +1,218 @@
+<meta charset="utf-8">
+<link rel="stylesheet" href="css/bootstrap.css">
+<link rel="stylesheet" href="css/bootstrap-datepicker.css">
+<link rel="stylesheet" href="css/bootstrap-datepicker3.css">
+<link rel="stylesheet" href="css/printPreview.css">
+<link rel="stylesheet" href="css/font-awesome/css/font-awesome.css">
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/bootstrap.js"></script>
+<script type="text/javascript" src="js/bootstrap-datepicker.js" async></script>
+<script type="text/javascript" src="js/Chart.bundle.js" async></script>
+<script type="text/javascript" src="js/Chart.js" async></script>
+<script type="text/javascript" src="js/xlsx.core.min.js" async></script>
+<script type="text/javascript" src="js/tableexport.js" async></script>
+<script type="text/javascript" src="js/jquery.table2excel.js" async></script>
+<script type="text/javascript" src="js/jquery.excelexport.js" async></script>
+<script type="text/javascript" src="js/pdfmake.min.js" async></script>
+<script type="text/javascript" src="js/vfs_fonts.js" async></script>
+<style media="screen">
+.disabled {
+ pointer-events: none;
+ cursor: default;
+ background-color: #E6E6E6;
+}
+.headerTable{
+  cursor: pointer;
+}
+.icons{
+  color: red;
+  margin-left: 5px;
+}
+</style>
+<script type="text/javascript">
+  var dataFromParent;
+  window.globalProperties;
+  window.globalFilter;
+  window.globalTotalPage;
+  window.glogbalOrder;
+  //alert(JSON.stringify(globalProperties)+' '+JSON.stringify(globalFilter)+' '+JSON.stringify(globalOrder));
+  //function init(){
+  if (typeof dataFromParent === 'undefined') {
+    var html = '<html><strong>Oopss!! </strong> you must go to previous Page</html>';
+    document.write(html);
+    setTimeout(function(){ this.close() }, 5000);
+  } else {
+    //alert('defined');
+    document.write(dataFromParent);
+  }
+  //}
+</script>
+<script type="text/javascript" src="js/myJs/downloadClient.js" async></script>
+<script type="text/javascript" src="js/myJs/convertToChart.js" async></script>
+<script type="text/javascript" src="js/myJs/pagination.js" async></script>
+<script type="text/javascript" src="js/myJs/getDataReporting.js" async></script>
+<script type="text/javascript" src="js/myJs/download.js" async></script>
+<script type="text/javascript" src="js/myJs/JSExcel.js" async></script>
+<script type="text/javascript" async>
+$(document).ready(function(){
+  $('.chartCanvas').hide();
+  $('.currentPage').val(1);
+  //alert(JSON.stringify(globalProperties)+' '+JSON.stringify(globalFilter)+' '+JSON.stringify(globalTotalPage));
+  $('.newPage2').click(function(){
+    var x = window.open('/reporting/preview.html', "abc", "toolbar=yes,scrollbars=yes,resizable=yes,top=500,left=500,width=400,height=400");
+    //x.dataFromParent = $('.showData').html();
+  });
+  $('.headerTable').click(function(){
+    var rows = ($('.rows').val()*1);
+    var offset = ($('.currentPage').val()*1);
+    var fieldName = $(this).data('id');
+    var totalPage = (typeof totalPages === 'undefined') ? globalTotalPage : totalPages
+    if (globalOrder.type=='ASC') {
+      var orders = {fieldName : fieldName, type : 'DESC'};
+    }else {
+      var orders = {fieldName : fieldName, type : 'ASC'};
+    }
+    //var orders = {fieldName : fieldName, type : 'ASC'};
+    getDataReporting(globalFilter,rows,offset,globalProperties,orders,totalPage);
+  });
+  $('.client').click(function (e) {
+        var printingOption = $(this).data('print');
+        if (printingOption=='full') {
+          var offset = 1;
+          var rows = -1;
+        }else {
+          var page = ($('.currentPage').val()*1);
+          var rows = ($('.rows').val()*1);
+          var offset = ($('.currentPage').val()*1);
+        }
+        var name = $(this).data('name');
+        var orders = (typeof order === 'undefined') ? globalOrder : order;
+        downloadClient(globalFilter,rows,offset,globalProperties,page,printingOption,orders,name);
+     });
+  $('.input-daterange input').each(function() {
+    $(this).datepicker({
+      format: "yyyy-mm-dd",
+      autoclose:true
+    });
+  });
+  $('.rows').change(function(){
+    var rows = ($(this).val()*1);
+    var offset = 1;
+    var orders = (typeof order === 'undefined') ? globalOrder : order;
+    var totalPage = (typeof totalPages === 'undefined') ? globalTotalPage : totalPages
+    getDataReporting(globalFilter,rows,offset,globalProperties,orders,totalPage);
+  });
+  $('.server').click(function(){
+    var orders = (typeof order === 'undefined') ? globalOrder : order;
+    var name = $(this).data('name');
+    var page = ($('.currentPage').val()*1);
+    switch (name) {
+      case 'serverFullPDF':
+        var properties = {typeOfReportingId : globalProperties.typeOfReportingId, convertReportingStat : true, typeReporting : 'pdf'};
+        var rows = -1;
+        var offset = 1;
+        break;
+      case 'serverFullExcel':
+        var properties = {typeOfReportingId : globalProperties.typeOfReportingId, convertReportingStat : true, typeReporting : 'excel'};
+        var rows = -1;
+        var offset = 1;
+        break;
+      case 'serverCurExcel':
+        var properties = {typeOfReportingId : globalProperties.typeOfReportingId, convertReportingStat : true, typeReporting : 'excel'};
+        var rows = ($('.rows').val()*1);
+        var offset = ($('.currentPage').val()*1);
+        break;
+      case 'serverCurPDF':
+        var properties = {typeOfReportingId : globalProperties.typeOfReportingId, convertReportingStat : true, typeReporting : 'pdf'};
+        var rows = ($('.rows').val()*1);
+        var offset = ($('.currentPage').val()*1);
+        break;
+      default:
+    }
+    download(globalFilter,rows,offset,properties,orders);
+  });
+  $('.chart').click(function(){
+    $('.chartCanvas').hide();
+    var rows = ($('.rows').val()*1);
+    var page = ($('.currentPage').val()*1);
+    var properties = {typeOfReportingId : globalProperties.typeOfReportingId, convertReportingStat : true, typeReporting : 'chart'};
+    var offset = ($('.currentPage').val()*1);
+    $('.closeChart').show();
+    $('.printPreview').hide();
+    var orders = (typeof order === 'undefined') ? globalOrder : order;
+    var totalPage = (typeof totalPages === 'undefined') ? globalTotalPage : totalPages
+    getDataReporting(globalFilter,rows,offset,properties,orders,totalPage);
+    //$('.server').addClass('disabled');
+  });
+  $('.closeChart').click(function(){
+    $('.chartCanvas').hide();
+    $('.printPreview').show();
+    $('.closeChart').hide();
+    $('.showData').show();
+    //$('.tableField').remove();
+    var rows = ($('.rows').val()*1);
+    var offset = 1;
+    var orders = (typeof order === 'undefined') ? globalOrder : order;
+    var totalPage = (typeof totalPages === 'undefined') ? globalTotalPage : totalPages
+    getDataReporting(globalFilter,rows,offset,globalProperties,orders,totalPage);
+  });
+  $('.clickAction').click(function(){
+    var currentPage = ($('.currentPage').val()*1);
+    var buttonName = $(this).data('page');
+    switch(buttonName) {
+    case 'firstPage':
+        var page = 1
+        break;
+    case 'previousPage':
+        var page = ((currentPage * 1)-1)
+        break;
+    case 'nextPage':
+        var page = ((currentPage * 1)+1)
+        break;
+    case 'lastPage':
+        var totalPage = (typeof totalPages === 'undefined') ? globalTotalPage : totalPages
+        var page = totalPage.totalPage;
+        break;
+    default:
+        var page = 1
+    }
+    if ($('.chartCanvas').is(':visible')) {
+      var properties =  {typeOfReportingId : globalProperties.typeOfReportingId, convertReportingStat : true, typeReporting : 'chart'};
+    }else {
+      var properties =  globalProperties;
+    }
+    var rows = ($('.rows').val()*1);
+    var totalPage = (typeof totalPages === 'undefined') ? globalTotalPage : totalPages
+    pagination(page, totalPage);
+    var offset = ($('.currentPage').val()*1);
+    var orders = (typeof order === 'undefined') ? globalOrder : order;
+    getDataReporting(globalFilter,rows,offset,properties,orders,totalPage,page);
+  });
+  $('.currentPage').keypress(function(event){
+    if(event.keyCode == 13){
+      var totalPage = (typeof totalPages === 'undefined') ? globalTotalPage : totalPages
+      var page = $(this).val();
+      if (page <= totalPage.totalPage) {
+        var rows = ($('.rows').val()*1);
+        var currentPage = ($('.currentPage').val()*1);
+        var page = $(this).val();
+        var offset = ($('.currentPage').val()*1);
+        var totalPage = (typeof totalPages === 'undefined') ? globalTotalPage : totalPages
+        var orders = (typeof order === 'undefined') ? globalOrder : order;
+        getDataReporting(globalFilter,rows,offset,globalProperties,orders,totalPage,page);
+        pagination(page,totalPage);
+      }else {
+        var totalPage = (typeof totalPages === 'undefined') ? globalTotalPage : totalPages
+        var rows = ($('.rows').val()*1);
+        var currentPage = ($('.currentPage').val()*1);
+        var page = totalPage.totalPage;
+        var offset = ($('.currentPage').val()*1);
+        var totalPage = (typeof totalPages === 'undefined') ? globalTotalPage : totalPages
+        var orders = (typeof order === 'undefined') ? globalOrder : order;
+        getDataReporting(globalFilter,rows,offset,globalProperties,orders,totalPage,page);
+        pagination(page, totalPage);
+      }
+    }
+  });
+});
+</script>

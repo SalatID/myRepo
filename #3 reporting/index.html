@@ -7,19 +7,33 @@
     <link rel="stylesheet" href="css/bootstrap-datepicker.css">
     <link rel="stylesheet" href="css/bootstrap-datepicker3.css">
     <link rel="stylesheet" href="css/printPreview.css">
+    <link rel="stylesheet" href="css/font-awesome/css/font-awesome.css">
     <script type="text/javascript" src="js/jquery.js"></script>
     <script type="text/javascript" src="js/bootstrap.js"></script>
-    <script type="text/javascript" src="js/bootstrap-datepicker.js" defer></script>
-    <script type="text/javascript" src="js/Chart.bundle.js" defer></script>
-    <script type="text/javascript" src="js/Chart.js" defer></script>
-    <script type="text/javascript" src="js/xlsx.core.min.js" defer></script>
-    <script type="text/javascript" src="js/pdfmake.min.js" defer></script>
-    <script type="text/javascript" src="js/vfs_fonts.js" defer></script>
+    <script type="text/javascript" src="js/bootstrap-datepicker.js"></script>
+    <script type="text/javascript" src="js/Chart.bundle.js" async></script>
+    <script type="text/javascript" src="js/Chart.js" async></script>
+    <script type="text/javascript" src="js/xlsx.core.min.js" async></script>
+    <script type="text/javascript" src="js/tableexport.js" async></script>
+    <script type="text/javascript" src="js/jquery.table2excel.js" async></script>
+    <script type="text/javascript" src="js/jquery.excelexport.js" async></script>
+    <script type="text/javascript" src="js/pdfmake.min.js" async></script>
+    <script type="text/javascript" src="js/vfs_fonts.js" async></script>
     <style media="screen">
     .disabled {
      pointer-events: none;
      cursor: default;
      background-color: #E6E6E6;
+    }
+    .headerTable{
+      cursor: pointer;
+    }
+    .icons{
+      color: red;
+      margin-left: 5px;
+    }
+    .showData{
+      display: none;
     }
     </style>
   </head>
@@ -43,49 +57,51 @@
 				<input type="button" class="btn btn-info send" value="Check">
       </div>
 				  <div class="showData">
-					<div class="filterRow">
-					  <label for="">Filter Row :</label>
-					  <select class="rows">
-						<option value="5">5</option>
-						<option value="10">10</option>
-						<option value="15">15</option>
-            <option value="20">20</option>
-            <option value="25">25</option>
-						<option value="40">40</option>
-					  </select>
-					  <label for="">rows per page</label>
-					</div>
-				  <div class="input-group grubPagination" style="width : 10%; float : right">
-  					<a href="#" class="input-group-addon start clickAction" data-page="firstPage">First</a>
-  					<a href="#" class="input-group-addon start clickAction" data-page="previousPage"><</a>
-  					<input type="text" class="form-control currentPage" style="width : 50px;" value="">
-  					<label class="input-group-addon endPage">of 2</label>
-  					<a href="#" class="input-group-addon end clickAction" data-page="nextPage">></a>
-  					<a href="#" class="input-group-addon end clickAction" data-page="lastPage">Last</a>
-				  </div>
-				  <div class="reporting" style="margin-bottom:1%; width : 50%;">
-            <div class="dropdown">
-             <button style="float : left; margin : 5px" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Download
-             <span class="caret"></span></button>
-             <ul class="dropdown-menu">
-               <li class="dropdown-header"><label for="" style="text-align : center">From Server</label></li>
-               <li><a href="#" class="server" data-print="full" data-name="serverFullPDF">PDF</a></li>
-               <li><a href="#" class="server" data-print="full" data-name="serverFullExcel">Excel</a></li>
-               <li><a href="#" class="server" data-print="current" data-name="serverCurPDF">Current Page PDF</a></li>
-               <li><a href="#" class="server" data-print="current" data-name="serverCurExcel">Current Page Excel</a></li>
-               <li class="divider"></li>
-               <li class="dropdown-header"><label for="">From Client </label></li>
-               <li><a href="#" class="client" data-print="full" data-name="PDF">PDF</a></li>
-               <li><a href="#" class="client" data-print="full" data-name="excel">Excel</a></li>
-               <li><a href="#" class="client" data-print="current" data-name="PDF">Current Page PDF</a></li>
-               <li><a href="#" class="client" data-print="current" data-name="excel">Current Page Excel</a></li>
-             </ul>
-             <input style="margin: 5px;" type="button" class="btn btn-warning chart" value="View Chart">
+            <div class="topPanel">
+              <div class="filterRow">
+    					  <label for="">Filter Row :</label>
+    					  <select class="rows">
+    						<option value="5">5</option>
+    						<option value="10">10</option>
+    						<option value="15">15</option>
+                <option value="20">20</option>
+                <option value="25">25</option>
+    						<option value="40">40</option>
+    					  </select>
+    					  <label for="">rows per page</label>
+    					</div>
+    				  <div class="input-group grubPagination" style="width : 10%; float : right">
+      					<a href="#" class="input-group-addon start clickAction" data-page="firstPage">First</a>
+      					<a href="#" class="input-group-addon start clickAction" data-page="previousPage"><</a>
+      					<input type="text" class="form-control currentPage" style="width : 50px;" value="">
+      					<label class="input-group-addon endPage">of 2</label>
+      					<a href="#" class="input-group-addon end clickAction" data-page="nextPage">></a>
+      					<a href="#" class="input-group-addon end clickAction" data-page="lastPage">Last</a>
+    				  </div>
+    				  <div class="reporting" style="margin-bottom:1%; width : 50%;">
+                <div class="dropdown">
+                 <button style="float : left; margin : 5px" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Download
+                 <span class="caret"></span></button>
+                 <ul class="dropdown-menu">
+                   <li class="dropdown-header"><label for="" style="text-align : center">From Server</label></li>
+                   <li><a href="#" class="server" data-print="full" data-name="serverFullPDF">PDF</a></li>
+                   <li><a href="#" class="server" data-print="full" data-name="serverFullExcel">Excel</a></li>
+                   <li><a href="#" class="server" data-print="current" data-name="serverCurPDF">Current Page PDF</a></li>
+                   <li><a href="#" class="server" data-print="current" data-name="serverCurExcel">Current Page Excel</a></li>
+                   <li class="divider"></li>
+                   <li class="dropdown-header"><label for="">From Client </label></li>
+                   <li><a href="#" class="client" data-print="full" data-name="PDF">PDF</a></li>
+                   <li><a href="#" class="client" data-print="full" data-name="excel">Excel</a></li>
+                   <li><a href="#" class="client" data-print="current" data-name="PDF">Current Page PDF</a></li>
+                   <li><a href="#" class="client" data-print="current" data-name="excel">Current Page Excel</a></li>
+                 </ul>
+                 <input style="margin: 5px;" type="button" class="btn btn-warning chart" value="View Chart">
+                </div>
+    				  </div>
             </div>
-				  </div>
 
 			<div class="content">
-			  <div class="printPreview" style="padding: 2%; margin-bottom : 2%;">
+			  <div class="printPreview" style="padding: 2%;">
 				<page size="A4" id="page">
             <div id="divCurrentPage" style="height : 100%; position : relative;">
               <div>
@@ -110,7 +126,7 @@
   							  <td colspan="2" class="endDate"></td>
   							</tr>
               </table>
-              <table border = '1' id="3"  style="width : 100%">
+              <table border = '1' id="myTable" style="width : 100%">
                 <thead class="tHeader">
 
                 </thead>
@@ -156,22 +172,17 @@
 
   						  </tbody>
   						</table>
-              <!--<div class="footerDocument" style="width : 100%; position : absolute; bottom : -35px;">
-                <label style="float :left;" class="labelGenDate"></label>
-              </div>-->
             </div>
 				</page>
 			</div><!--print preview -->
       </div><!--Content -->
       <input type="button" class="btn btn-info closeChart" value="Close Chart" style="z-index : initial; position : relative;">
-        <div class="chartCanvas">
+        <div class="chartCanvas" style="width : 90%; margin : 0 auto;">
           <canvas id="canvasTrx"></canvas>
           <canvas id="canvasClick"></canvas>
         </div>
       </div>
     </div>
-  </div>
-  </body>
 </html>
 <script type="text/javascript" src="js/myJs/downloadClient.js" async></script>
 <script type="text/javascript" src="js/myJs/convertToChart.js" async></script>
@@ -179,15 +190,9 @@
 <script type="text/javascript" src="js/myJs/getDataReporting.js" async></script>
 <script type="text/javascript" src="js/myJs/download.js" async></script>
 <script type="text/javascript" src="js/myJs/JSExcel.js" async></script>
-<script type="text/javascript" defer>
+<script type="text/javascript" async>
 $(document).ready(function(){
   $('.alert-danger').hide();
-  $('.reporting').hide();
-  $('.showData').hide();
-  $('.filterRow').hide();
-  $('.grubPagination').hide();
-  $('.chartCanvas').hide();
-  $('.closeChart').hide();
     $.getJSON("page/firstLoad.php", function(result) {
       //$('.content').html(JSON.stringify(result));
     var cmbTypeOfReporting = $(".cmbTypeOfReporting");
@@ -204,28 +209,6 @@ $(document).ready(function(){
       alert('Oops!!, Something Wrong');
     }
   });
-  $('.client').click(function (e) {
-        var typeOfReportingId = $('.cmbTypeOfReporting').val();
-        var provinceId = $('.cmbProvince').val();
-        var cityId = $('.cmbCity').val();
-        var minDate = $('.min').val();
-        var maxDate = $('.max').val();
-        var convertReporting = {convertReportingStat : false, typeReporting : false};
-        var printingOption = $(this).data('print');
-        if (printingOption=='full') {
-          var offset = 1;
-          var rows = -1;
-        }else {
-          var page = ($('.currentPage').val()*1);
-          var rows = ($('.rows').val()*1);
-          var offset = ($('.currentPage').val()*1);
-        }
-        var name = $(this).data('name');
-        downloadClient(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting,page,printingOption,name);
-     });
-  $('.cmbTypeOfReporting').change(function(){
-    $('.showData').hide();
-  });
   $('.input-daterange input').each(function() {
     $(this).datepicker({
       format: "yyyy-mm-dd",
@@ -234,153 +217,29 @@ $(document).ready(function(){
   });
   $('.send').click(function(){
     var typeOfReportingId = $('.cmbTypeOfReporting').val();
-    var provinceId = $('.cmbProvince').val();
-    var cityId = $('.cmbCity').val();
     var minDate = $('.min').val();
     var maxDate = $('.max').val();
+    var filter ={minDate:minDate,maxDate:maxDate};
     var rows = ($('.rows').val()*1);
-    var convertReporting = {convertReportingStat : false, typeReporting : false};
+    var properties = {typeOfReportingId : typeOfReportingId, convertReportingStat : false, typeReporting : false};
     var offset = 1;
-    getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting);
+    var order = {fieldName : 'id', type : 'ASC'};
+    getDataReporting(filter,rows,offset,properties,order);
     $('#canvasClick').hide();
     $('#canvasTrx').hide();
     $('.closeChart').hide();
     $('.printPreview').show();
-  });
-  $('.rows').change(function(){
-    var rows = ($(this).val()*1);
-    var typeOfReportingId = $('.cmbTypeOfReporting').val();
-    var provinceId = $('.cmbProvince').val();
-    var cityId = $('.cmbCity').val();
-    var minDate = $('.min').val();
-    var maxDate = $('.max').val();
-    var convertReporting = {convertReportingStat : false, typeReporting : false};
-    var offset = 1;
-    getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting);
-  });
-  $('.server').click(function(){
-    var name = $(this).data('name');
-    var page = ($('.currentPage').val()*1);
-    switch (name) {
-      case 'serverFullPDF':
-        var convertReporting = {convertReportingStat : true, typeReporting : 'pdf'};
-        var rows = -1;
-        var offset = 1;
-        break;
-      case 'serverFullExcel':
-        var convertReporting = {convertReportingStat : true, typeReporting : 'excel'};
-        var rows = -1;
-        var offset = 1;
-        break;
-      case 'serverCurExcel':
-        var convertReporting = {convertReportingStat : true, typeReporting : 'excel'};
-        var rows = ($('.rows').val()*1);
-        var offset = ($('.currentPage').val()*1);
-        break;
-      case 'serverCurPDF':
-        var convertReporting = {convertReportingStat : true, typeReporting : 'pdf'};
-        var rows = ($('.rows').val()*1);
-        var offset = ($('.currentPage').val()*1);
-        break;
-      default:
-    }
-    var typeOfReportingId = $('.cmbTypeOfReporting').val();
-    var provinceId = $('.cmbProvince').val();
-    var cityId = $('.cmbCity').val();
-    var minDate = $('.min').val();
-    var maxDate = $('.max').val();
-    download(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting);
-  });
-  $('.chart').click(function(){
-    $('.chartCanvas').hide();
-    var typeOfReportingId = $('.cmbTypeOfReporting').val();
-    var provinceId = $('.cmbProvince').val();
-    var cityId = $('.cmbCity').val();
-    var minDate = $('.min').val();
-    var maxDate = $('.max').val();
-    var rows = ($('.rows').val()*1);
-    var page = ($('.currentPage').val()*1);
-    var convertReporting = {convertReportingStat : true, typeReporting : 'chart'};
-    var offset = ($('.currentPage').val()*1);
-    $('.closeChart').show();
-    $('.printPreview').hide();
-    getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting);
-    //$('.server').addClass('disabled');
-  });
-  $('.closeChart').click(function(){
-    $('#canvasClick').hide();
-    $('#canvasTrx').hide();
-    $('.closeChart').hide();
-    $('.showData').hide();
-    $('.chartjs-hidden-iframe').remove();
-  });
-  $('.clickAction').click(function(){
-    var currentPage = ($('.currentPage').val()*1);
-    var buttonName = $(this).data('page');
-    switch(buttonName) {
-    case 'firstPage':
-        var page = 1
-        break;
-    case 'previousPage':
-        var page = ((currentPage * 1)-1)
-        break;
-    case 'nextPage':
-        var page = ((currentPage * 1)+1)
-        break;
-    case 'lastPage':
-        var page = totalPage.totalPage
-        break;
-    default:
-        var page = 1
-    }
-    if ($('.chartCanvas').is(':visible')) {
-      $('.chartCanvas').hide();
-      var convertReporting = {convertReportingStat : true, typeReporting : 'chart'};
+    if (typeOfReportingId=="") {
+      alert('Oops!!! Check Your Reporting Type');
     }else {
-      var convertReporting = {convertReportingStat : false, typeReporting : false};
+      var x = window.open('/reporting/preview.html', "abc", "scrollbars=yes,resizable=no,top=500,left=500,width=1080,height=700");
+      x.dataFromParent = $('.showData').html();
+      x.globalProperties = properties;
+      x.globalFilter = filter;
+      x.globalTotalPage = totalPages;
+      x.globalOrder = order;
     }
-    var typeOfReportingId = $('.cmbTypeOfReporting').val();
-    var provinceId = $('.cmbProvince').val();
-    var cityId = $('.cmbCity').val();
-    var minDate = $('.min').val();
-    var maxDate = $('.max').val();
-    var rows = ($('.rows').val()*1);
-    //var page = ((currentPage * 1)-1);
-    pagination(page, totalPage);
-    var offset = ($('.currentPage').val()*1);
-    getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting,page);
-  });
-  $('.currentPage').keypress(function(event){
-    if(event.keyCode == 13){
-      if (page <= totalPage.totalPage) {
-        var typeOfReportingId = $('.cmbTypeOfReporting').val();
-        var provinceId = $('.cmbProvince').val();
-        var cityId = $('.cmbCity').val();
-        var minDate = $('.min').val();
-        var maxDate = $('.max').val();
-        var rows = ($('.rows').val()*1);
-        var convertReporting = {convertReportingStat : false, typeReporting : false};
-        var currentPage = ($('.currentPage').val()*1);
-        var page = $(this).val();
-        var offset = ($('.currentPage').val()*1);
-        getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting,page);
-        pagination(page, totalPage);
-      }else {
-      //alert('Oops!!! Something Wrong');
-      var typeOfReportingId = $('.cmbTypeOfReporting').val();
-      var provinceId = $('.cmbProvince').val();
-      var cityId = $('.cmbCity').val();
-      var minDate = $('.min').val();
-      var maxDate = $('.max').val();
-      var rows = ($('.rows').val()*1);
-      var convertReporting = {convertReportingStat : false, typeReporting : false};
-      var currentPage = ($('.currentPage').val()*1);
-      var page = totalPage.totalPage;
-      var offset = ($('.currentPage').val()*1);
-      getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting,page);
-      pagination(page, totalPage);
-      }
-    }
+
   });
 });
 </script>

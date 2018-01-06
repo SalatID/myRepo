@@ -14,7 +14,7 @@
 
       $param=$decode['param']['request'];
       //print_r($param);
-        if ($param['typeOfReportingId']==1) {
+        if ($param['properties']['typeOfReportingId']==1) {
           $maxDate = $param['filter']['maxDate'];
           $minDate = $param['filter']['minDate'];
           $rows = $param['limit']['rows'];
@@ -22,7 +22,7 @@
           $order = $param['order']['fieldName'].' '.$param['order']['type'];
           $result = $reporting->selectTrx($minDate,$maxDate,$offset,$rows,$order);
           print_r($result);
-        }elseif ($param['typeOfReportingId']==2) {
+        }elseif ($param['properties']['typeOfReportingId']==2) {
           $maxDate = $param['filter']['maxDate'];
           $minDate = $param['filter']['minDate'];
           $rows = $param['limit']['rows'];

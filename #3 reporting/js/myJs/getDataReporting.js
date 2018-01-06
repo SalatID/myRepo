@@ -1,17 +1,12 @@
-function getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting,orders,page=1){
+function getDataReporting(filter,rows,offset,properties,orders,totalPage=null,page=1){
   var param = {request : {
-                  typeOfReportingId : typeOfReportingId,
-                  filter : {
-                    minDate : minDate,
-                    maxDate : maxDate
-                  },
+                  filter : filter,
                   limit:{
                     rows : rows,
                     offset : offset
                   },
                   order : orders,
-                  properties : convertReporting}};
-  //alert(JSON.stringify(param));
+                  properties : properties}};
   page = page;
   $.ajax({
     type	: 'POST',
@@ -25,14 +20,14 @@ function getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,ro
       var tHeader = $('.tHeader');
       var tContent = $('.tContent');
       if (result.response.error == 0) {
-        if (convertReporting.typeReporting == 'chart') {
-          $('.chartCanvas').hide();
-          if (typeOfReportingId==1){
-            convertReportingToChart(result);
-          }else if (typeOfReportingId==2) {
-            convertClickToChart(result);
+        if (properties.typeReporting == 'chart') {
+          $(".tableField").remove();
+          if (properties.typeOfReportingId==1){
+            convertReportingToChart(result,totalPage);
+          }else if (properties.typeOfReportingId==2) {
+            convertClickToChart(result,totalPage);
           }
-        }else if (typeOfReportingId==1) {
+        }else if (properties.typeOfReportingId==1) {
           $(".tableField").remove();
           $.each(result.response.data, function(e) {
             html='<tr class="tableField">'
@@ -44,7 +39,7 @@ function getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,ro
             tContent.append(html);
             //tableField.append('<td>'+this.contractId+'</td></tr>');
           });
-        }else if (typeOfReportingId==2) {
+        }else if (properties.typeOfReportingId==2) {
           $(".tableField").remove();
           $.each(result.response.data, function(e) {
             html='<tr class="tableField">'
@@ -62,22 +57,17 @@ function getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,ro
         $('.endDate').text(': '+result.response.docAttribute.endDate);
         $('.title').text(result.response.docAttribute.title);
         //var sortIcon = result.response.order.type=='ASC' ? 'fa fa-sort-asc' : 'fa fa-sort-desc';
+        var icon = result.response.order.type == 'ASC' ? 'fa fa-sort-asc' : 'fa fa-sort-desc';
           var th = '';
           $.each(result.response.tableHeader, function(e) {
            if (result.response.order.fieldName == 'id' || result.response.order.fieldName !== this.fieldName) {
              th += '<th class="headerTable" data-id="'+this.fieldName+'" order="ASC">'+this.col+'</th>';
            }else if (result.response.order.fieldName == this.fieldName) {
-             th += '<th class="headerTable" data-id="'+this.fieldName+'" order="ASC">'+this.col+'<i class="icons '+result.response.order.icon+'" aria-hidden="true"></i></th>';
+             th += '<th class="headerTable" data-id="'+this.fieldName+'" order="ASC">'+this.col+'<i class="icons '+icon+'" aria-hidden="true"></i></th>';
            }
          })
          html='<tr class="tableField">'+th+'</tr>';
          tHeader.append(html);
-         order = result.response.order;
-        $('.reporting').show();
-        $('.filterRow').show();
-        $('.grubPagination').show();
-        $('.showData').show();
-        $('.content').show();
         $('.aPageNumber').remove();
         //alert('bawah'+JSON.stringify(orders));
         $('.headerTable').click(function(){
@@ -88,15 +78,16 @@ function getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,ro
             var orders = {fieldName : fieldName, type : 'ASC'};
           }
           //var orders = {fieldName : fieldName, type : 'ASC'};
-          getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting,orders,page);
+          getDataReporting(filter,rows,offset,properties,orders,page);
         });
         var totalRow = result.response.totalRow;
-        totalPage = {totalPage : Math.ceil(totalRow/rows)};
+        totalPages = {totalPage : Math.ceil(totalRow/rows)};
+        order = result.response.order;
         //alert('totalPage'+JSON.stringify(totalPage));
         //var offset = 0;
-        pagination(page, totalPage);
+        pagination(page, totalPages);
         $('.labelGenDate').text('Generate Date : '+result.response.docAttribute.generateDate);
-        $('.labelPageNumb').text(page+' of '+totalPage.totalPage);
+        $('.labelPageNumb').text(page+' of '+totalPages.totalPage);
         $('.alert-danger').hide();
       }else {
         $('.alert-danger').show();

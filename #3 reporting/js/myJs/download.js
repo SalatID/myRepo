@@ -1,5 +1,11 @@
-function download(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting,page=1){
-  var param = {request : { 0 : {typeOfReportingId : typeOfReportingId,provinceId : provinceId, cityId : cityId, minDate : minDate, maxDate : maxDate, rows : rows, offset : offset, convertReporting : convertReporting}}};
+function download(globalFilter,rows,offset,properties,globalOrder,page=1){
+  var param = {request : {
+                  properties : properties,
+                  filter : globalFilter,
+                  limit : {rows : rows, offset : offset},
+                  order : globalOrder
+              }
+            };
   page = page;
   window.open('page/convert.php?'+'request='+JSON.stringify(param));
 }

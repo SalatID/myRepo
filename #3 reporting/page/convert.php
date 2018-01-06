@@ -5,32 +5,31 @@ $reporting = new reporting();
 $decode = json_decode($_GET['request'], true);
 $param=$decode['request'];
 //print_r($param);
-foreach ($param as $keyParam => $valueParam) {
-if ($valueParam['convertReporting']['convertReportingStat']==true) {
-  $typeOfReporting = $valueParam['typeOfReportingId'];
-  $maxDate = $valueParam['maxDate'];
-  $minDate = $valueParam['minDate'];
-  $rows = $valueParam['rows'];
-  $offset = (($valueParam['offset']-1)*$rows);
+if ($param['properties']['convertReportingStat']==true) {
+  $typeOfReporting = $param['properties']['typeOfReportingId'];
+  $maxDate = $param['filter']['maxDate'];
+  $minDate = $param['filter']['minDate'];
+  $rows = $param['limit']['rows'];
+  $offset = (($param['limit']['offset']-1)*$rows);
+  $order = $param['order']['fieldName'].' '.$param['order']['type'];
     if ($typeOfReporting==1) {
-    $result = $reporting->selectTrx($minDate,$maxDate,$offset,$rows);
+    $result = $reporting->selectTrx($minDate,$maxDate,$offset,$rows,$order);
   }elseif ($typeOfReporting==2) {
-    $result = $reporting->selectClick($minDate,$maxDate,$offset,$rows);
+    $result = $reporting->selectClick($minDate,$maxDate,$offset,$rows,$order);
   }
   $decode = json_decode($result,true);
   $dataCell = $decode['response'];
   if ($decode['response']['error']==0) {
-    if ($valueParam['convertReporting']['typeReporting']=='pdf') {
+    if ($param['properties']['typeReporting']=='pdf') {
       convertToPDF($typeOfReporting,$dataCell,$offset);
-    }elseif ($valueParam['convertReporting']['typeReporting']=='excel') {
+    }elseif ($param['properties']['typeReporting']=='excel') {
       convertToExcel($typeOfReporting,$dataCell,$offset);
     }else {
-      $rows = $valueParam ['rows'];
+      $rows = $param['limit']['rows'];
       $result = $reporting->selectTrx($minDate,$maxDate,$offset,$rows);
       print_r($result);
     }
   }
-}
 }
 function convertToPDF($typeOfReporting, $dataCell,$offset){
   require_once ("../lib/fpdf/fpdf.php");
@@ -54,12 +53,25 @@ function convertToPDF($typeOfReporting, $dataCell,$offset){
   $pdf = new PDF();
   $pdf->AliasNbPages();
   $judul = $dataCell['docAttribute']['title'];
-  $header = array(
-      array("label"=>$dataCell['tableHeader']['col1'], "length"=>8, "align"=>"C"),
-      array("label"=>$dataCell['tableHeader']['col2'], "length"=>50, "align"=>"C"),
-      array("label"=>$dataCell['tableHeader']['col3'], "length"=>65, "align"=>"C"),
-      array("label"=>$dataCell['tableHeader']['col4'], "length"=>65, "align"=>"C")
-    );
+  $header = array();
+  $length = 8;
+  foreach ($dataCell['tableHeader'] as $keyData => $valueData) {
+    $header[] = array("label"=>$valueData['col'], "length"=>$length, "align"=>"C");
+    switch ($length) {
+      case 8:
+        $length = 50;
+        break;
+      case 50:
+        $length = 65;
+        break;
+      case 65:
+        $length = 65;
+        break;
+      default:
+        $length=8;
+        break;
+    }
+  }
   $pdf->AddPage();
   #tampilkan judul laporan
   $pdf->SetFont('Arial','B','16');
@@ -129,10 +141,10 @@ function convertToPDF($typeOfReporting, $dataCell,$offset){
 function convertToExcel($typeOfReporting, $dataCell,$offset){
   $generateDate = date('Y-m-d H:i:s ').'GMT'.date('P');
   $judul = $dataCell['docAttribute']['title'];
-  $header = array($dataCell['tableHeader']['col1'],
-                  $dataCell['tableHeader']['col2'],
-                  $dataCell['tableHeader']['col3'],
-                  $dataCell['tableHeader']['col4'],);
+  $header = array();
+  foreach ($dataCell['tableHeader'] as $keyData => $valueData) {
+    $header[] = $valueData['col'];
+  }
   include '../lib/Classes/PHPExcel.php';
   /*start - BLOCK PROPERTIES FILE EXCEL*/
   $file = new PHPExcel ();

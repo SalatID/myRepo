@@ -1,4 +1,6 @@
-function convertReportingToChart(result){
+function convertReportingToChart(result,totalPage){
+  $('#canvasClick').replaceWith('<canvas id="canvasClick"></canvas>');
+  $('#canvasTrx').replaceWith('<canvas id="canvasTrx"></canvas>');
   $('.chartjs-hidden-iframe').remove();
   $('#canvasClick').hide();
   $('#canvasTrx').show();
@@ -60,7 +62,7 @@ function convertReportingToChart(result){
   $('.chartCanvas').show();
   pagination(page, totalPage);
 }
-function convertClickToChart(result){
+function convertClickToChart(result,totalPage){
   $('#canvasTrx').hide();
   $('#canvasClick').show();
   var label = new Array;

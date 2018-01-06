@@ -51,6 +51,7 @@
         $decode = json_decode($result,true);
         $totalRow = $decode['response'];
         $limit = $rows != -1 ? $offset.', '.$rows : $offset;
+        //echo $limit;die;
         $this->db->select($table,$field,$on=null,$where,$group=null,$order,$limit);
         $result = $this->db->getResult();
         $decode = json_decode($result,true);
@@ -61,7 +62,6 @@
             if ($minDate <= $maxDate) {
               if (count($rowTrx)!=0) {
                 $order = explode(' ',$order);
-                $icon = $order[1] == 'ASC' ? 'fa fa-sort-asc' : 'fa fa-sort-desc';
                 $error =0;
                 $generateDate = date('Y-m-d H:i:s ').'GMT'.date('P');
                 $title = 'LAPORAN DATA TRANSAKSI IKLANINAJA.COM';
@@ -81,8 +81,7 @@
                                                               'generateDate'=>$generateDate,
                                                               'typeOfReporting'=> 'Transaction'),
                                         'order'=>array('fieldName'=>$order[0],
-                                                       'type'=>$order[1],
-                                                       'icon'=>$icon),
+                                                       'type'=>$order[1]),
                                         'tableHeader'=>$arrayHeader,
                                         'data'=>$rowTrx)
                                     );
@@ -163,7 +162,6 @@
                 }
                 $order = explode(' ',$order);
                 //print_r($order);die;
-                $icon = $order[1] == 'ASC' ? 'fa fa-sort-asc' : 'fa fa-sort-desc';
                 $title = 'LAPORAN TOTAL CLICK IKLANINAJA.COM';
                 $arrayHeader = array (array("col"=>"NO","fieldName"=>"id"),
                                       array("col"=>"ADS ID","fieldName"=>"adsId"),
@@ -180,8 +178,7 @@
                                                                   'generateDate'=>$generateDate,
                                                                   'typeOfReporting'=> 'Total Click'),
                                             'order'=>array('fieldName'=>$order[0],
-                                                           'type'=>$order[1],
-                                                           'icon'=>$icon),
+                                                           'type'=>$order[1]),
                                             'tableHeader'=>$arrayHeader,
                                             'data'=>$arrayData));
 

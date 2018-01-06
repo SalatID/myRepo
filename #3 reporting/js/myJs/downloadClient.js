@@ -2,10 +2,10 @@ function downloadExcel(printingOption){
     window.open('data:application/vnd.ms-excel,' + encodeURIComponent($('#divTableContent').html()));
 }
 function downloadPdf(typeOfReportingId,result,offset,rows){
-  var header = [{text: result.response.tableHeader.col1, style: 'tableHeader', bold: true, alignment: 'center', fillColor:'#7AD7FF', height : '10px'},
-                {text: result.response.tableHeader.col2, style: 'tableHeader', bold: true, alignment: 'center', fillColor:'#7AD7FF', height : '10px'},
-                {text: result.response.tableHeader.col3, style: 'tableHeader', bold: true, alignment: 'center', fillColor:'#7AD7FF', height : '10px'},
-                {text: result.response.tableHeader.col4, style: 'tableHeader', bold: true, alignment: 'center', fillColor:'#7AD7FF', height : '10px'}];
+  var header = [];
+  $.each(result.response.tableHeader, function(e){
+    header [e]={text: this.col, style: 'tableHeader', bold: true, alignment: 'center', fillColor:'#7AD7FF', height : '10px'};
+  });
   var label = [];
   for (var i = 0; i < result.response.data.length; i++) {
     if (typeOfReportingId==1) {
@@ -38,9 +38,6 @@ function downloadPdf(typeOfReportingId,result,offset,rows){
                           margin: [10, 0]
                           }
                         },
-                          /*{ text: 'Generate Date : '+result.response.docAttribute.generateDate,
-                          bold : true,
-                          margin: [10, 0] }*/
                         content: [
                           {text: result.response.docAttribute.title, fontSize: 20, bold: true, alignment: 'center'},
                           {
@@ -70,19 +67,15 @@ function downloadPdf(typeOfReportingId,result,offset,rows){
    ] };
     pdfMake.createPdf(docDefinition).download();
 }
-function downloadClient(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting,page=1,printingOption,name){
-  var param = { request : {
-                  typeOfReportingId : typeOfReportingId,
-                  filter : {
-                    minDate : minDate,
-                    maxDate : maxDate
-                  },
+function downloadClient(globalFilter,rows,offset,globalProperties,page=1,printingOption,globalOrder,name){
+  var param = {request : {
+                  filter : globalFilter,
                   limit:{
                     rows : rows,
-                    offset : offset,
+                    offset : offset
                   },
-                  properties : convertReporting}};
-  page = page;
+                  order : globalOrder,
+                  properties : globalProperties}};
   $.ajax({
     type	: 'POST',
     async : false,
@@ -96,7 +89,7 @@ function downloadClient(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows
         var tHeaderHidden = $('.tHeaderHidden');
         var tContentHidden = $('.tContentHidden');
         title = result.response.title;
-        if (typeOfReportingId==1) {
+        if (globalProperties.typeOfReportingId==1) {
           $(".tableFieldHidden").remove();
           html='<tr class="tableFieldHidden">'
            + '<th style="text-align: center;height: 35px;background-color: #7AD7FF;">NO</th>'
@@ -116,7 +109,7 @@ function downloadClient(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows
             //tableField.append('<td>'+this.contractId+'</td></tr>');
           });
 
-        }else if (typeOfReportingId==2) {
+        }else if (globalProperties.typeOfReportingId==2) {
           $(".tableFieldHidden").remove();
           html='<tr class="tableField">'
            + '<th style="text-align: center;height: 35px;background-color: #7AD7FF;">NO</th>'
@@ -138,7 +131,7 @@ function downloadClient(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows
         }
         $('.labelGenDateHidden').text(' : '+result.response.docAttribute.generateDate);
         if (name == 'PDF') {
-          downloadPdf(typeOfReportingId,result,offset,rows);
+          downloadPdf(globalProperties.typeOfReportingId,result,offset,rows);
         }else {
           downloadExcel (printingOption);
         }

@@ -11,14 +11,14 @@
     <script type="text/javascript" src="js/jquery.js"></script>
     <script type="text/javascript" src="js/bootstrap.js"></script>
     <script type="text/javascript" src="js/bootstrap-datepicker.js"></script>
-    <script type="text/javascript" src="js/Chart.bundle.js"></script>
-    <script type="text/javascript" src="js/Chart.js"></script>
-    <script type="text/javascript" src="js/xlsx.core.min.js"></script>
-    <script type="text/javascript" src="js/tableexport.js"></script>
-    <script type="text/javascript" src="js/jquery.table2excel.js"></script>
-    <script type="text/javascript" src="js/jquery.excelexport.js"></script>
-    <script type="text/javascript" src="js/pdfmake.min.js"></script>
-    <script type="text/javascript" src="js/vfs_fonts.js"></script>
+    <script type="text/javascript" src="js/Chart.bundle.js" async></script>
+    <script type="text/javascript" src="js/Chart.js" async></script>
+    <script type="text/javascript" src="js/xlsx.core.min.js" async></script>
+    <script type="text/javascript" src="js/tableexport.js" async></script>
+    <script type="text/javascript" src="js/jquery.table2excel.js" async></script>
+    <script type="text/javascript" src="js/jquery.excelexport.js" async></script>
+    <script type="text/javascript" src="js/pdfmake.min.js" async></script>
+    <script type="text/javascript" src="js/vfs_fonts.js" async></script>
     <style media="screen">
     .disabled {
      pointer-events: none;
@@ -32,12 +32,31 @@
       color: red;
       margin-left: 5px;
     }
+    .showData{
+      display: none;
+    }
     </style>
   </head>
   <body>
     <div class="container">
 		<div class="row">
-			  <div class="showData">
+			<div class="headerReport">
+				<h1>REPORTING</h1>
+        <div class="alert alert-danger" >
+        </div>
+				<div class="typeOfReporting">
+				  <select class="form-control cmbTypeOfReporting" name="typeOfReporting">
+					<option value="">Type Of Report</option>
+				  </select>
+				</div>
+				<div class="input-group input-daterange">
+					<input type="text" class="form-control datePicker min" value="">
+					<div class="input-group-addon">to</div>
+					<input type="text" class="form-control datePicker max" value="">
+				</div>
+				<input type="button" class="btn btn-info send" value="Check">
+      </div>
+				  <div class="showData">
 					<div class="filterRow">
 					  <label for="">Filter Row :</label>
 					  <select class="rows">
@@ -165,16 +184,14 @@
         </div>
       </div>
     </div>
-  </div>
-  </body>
 </html>
-<script type="text/javascript" src="js/myJs/downloadClient.js"></script>
-<script type="text/javascript" src="js/myJs/convertToChart.js"></script>
-<script type="text/javascript" src="js/myJs/pagination.js"></script>
-<script type="text/javascript" src="js/myJs/getDataReporting.js"></script>
-<script type="text/javascript" src="js/myJs/download.js"></script>
-<script type="text/javascript" src="js/myJs/JSExcel.js"></script>
-<script type="text/javascript">
+<script type="text/javascript" src="js/myJs/downloadClient.js" async></script>
+<script type="text/javascript" src="js/myJs/convertToChart.js" async></script>
+<script type="text/javascript" src="js/myJs/pagination.js" async></script>
+<script type="text/javascript" src="js/myJs/getDataReporting.js" async></script>
+<script type="text/javascript" src="js/myJs/download.js" async></script>
+<script type="text/javascript" src="js/myJs/JSExcel.js" async></script>
+<script type="text/javascript" async>
 $(document).ready(function(){
   $('.alert-danger').hide();
   $('.reporting').hide();
@@ -199,13 +216,16 @@ $(document).ready(function(){
       alert('Oops!!, Something Wrong');
     }
   });
+  $('.newPage2').click(function(){
+    var x = window.open('/reporting/preview.html', "abc", "toolbar=yes,scrollbars=yes,resizable=yes,top=500,left=500,width=400,height=400");
+    //x.dataFromParent = $('.showData').html();
+  });
   $('.client').click(function (e) {
         var typeOfReportingId = $('.cmbTypeOfReporting').val();
-        var provinceId = $('.cmbProvince').val();
-        var cityId = $('.cmbCity').val();
         var minDate = $('.min').val();
         var maxDate = $('.max').val();
-        var convertReporting = {convertReportingStat : false, typeReporting : false};
+        var filter ={minDate:minDate,maxDate:maxDate};
+        var properties = {typeOfReportingId : typeOfReportingId, convertReportingStat : false, typeReporting : false};
         var printingOption = $(this).data('print');
         if (printingOption=='full') {
           var offset = 1;
@@ -216,7 +236,7 @@ $(document).ready(function(){
           var offset = ($('.currentPage').val()*1);
         }
         var name = $(this).data('name');
-        downloadClient(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting,page,printingOption,name);
+        downloadClient(filter,rows,offset,properties,page,printingOption,name);
      });
   $('.cmbTypeOfReporting').change(function(){
     $('.showData').hide();
@@ -229,79 +249,81 @@ $(document).ready(function(){
   });
   $('.send').click(function(){
     var typeOfReportingId = $('.cmbTypeOfReporting').val();
-    var provinceId = $('.cmbProvince').val();
-    var cityId = $('.cmbCity').val();
     var minDate = $('.min').val();
     var maxDate = $('.max').val();
+    var filter ={minDate:minDate,maxDate:maxDate};
     var rows = ($('.rows').val()*1);
-    var convertReporting = {convertReportingStat : false, typeReporting : false};
+    var properties = {typeOfReportingId : typeOfReportingId, convertReportingStat : false, typeReporting : false};
     var offset = 1;
     var order = {fieldName : 'id', type : 'ASC'};
-    getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting,order);
+    getDataReporting(filter,rows,offset,properties,order);
     $('#canvasClick').hide();
     $('#canvasTrx').hide();
     $('.closeChart').hide();
     $('.printPreview').show();
+    var x = window.open('/reporting/preview.html', "abc", "scrollbars=yes,resizable=no,top=500,left=500,width=1080,height=700");
+    x.dataFromParent = $('.showData').html();
+    x.globalProperties = properties;
+    x.globalFilter = filter;
+    x.globalTotalPage = totalPage;
+    x.globalOrder = order;
   });
   $('.rows').change(function(){
     var rows = ($(this).val()*1);
     var typeOfReportingId = $('.cmbTypeOfReporting').val();
-    var provinceId = $('.cmbProvince').val();
     var cityId = $('.cmbCity').val();
     var minDate = $('.min').val();
     var maxDate = $('.max').val();
-    var convertReporting = {convertReportingStat : false, typeReporting : false};
+    var filter ={minDate:minDate,maxDate:maxDate};
+    var properties = {typeOfReportingId : typeOfReportingId, convertReportingStat : false, typeReporting : false};
     var offset = 1;
-    getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting,order);
+    getDataReporting(filter,rows,offset,properties,order);
   });
   $('.server').click(function(){
     var name = $(this).data('name');
     var page = ($('.currentPage').val()*1);
     switch (name) {
       case 'serverFullPDF':
-        var convertReporting = {convertReportingStat : true, typeReporting : 'pdf'};
+        var properties = {typeOfReportingId : typeOfReportingId, convertReportingStat : true, typeReporting : 'pdf'};
         var rows = -1;
         var offset = 1;
         break;
       case 'serverFullExcel':
-        var convertReporting = {convertReportingStat : true, typeReporting : 'excel'};
+        var properties = {typeOfReportingId : typeOfReportingId, convertReportingStat : true, typeReporting : 'excel'};
         var rows = -1;
         var offset = 1;
         break;
       case 'serverCurExcel':
-        var convertReporting = {convertReportingStat : true, typeReporting : 'excel'};
+        var properties = {typeOfReportingId : typeOfReportingId, convertReportingStat : true, typeReporting : 'excel'};
         var rows = ($('.rows').val()*1);
         var offset = ($('.currentPage').val()*1);
         break;
       case 'serverCurPDF':
-        var convertReporting = {convertReportingStat : true, typeReporting : 'pdf'};
+        var properties = {typeOfReportingId : typeOfReportingId, convertReportingStat : true, typeReporting : 'pdf'};
         var rows = ($('.rows').val()*1);
         var offset = ($('.currentPage').val()*1);
         break;
       default:
     }
     var typeOfReportingId = $('.cmbTypeOfReporting').val();
-    var provinceId = $('.cmbProvince').val();
-    var cityId = $('.cmbCity').val();
     var minDate = $('.min').val();
     var maxDate = $('.max').val();
-    download(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting);
+    var filter ={minDate:minDate,maxDate:maxDate};
+    download(filter,rows,offset,properties);
   });
   $('.chart').click(function(){
     $('.chartCanvas').hide();
     var typeOfReportingId = $('.cmbTypeOfReporting').val();
-    var provinceId = $('.cmbProvince').val();
-    var cityId = $('.cmbCity').val();
     var minDate = $('.min').val();
     var maxDate = $('.max').val();
+    var filter ={minDate:minDate,maxDate:maxDate};
     var rows = ($('.rows').val()*1);
     var page = ($('.currentPage').val()*1);
-    var convertReporting = {convertReportingStat : true, typeReporting : 'chart'};
+    var properties = {typeOfReportingId : typeOfReportingId, convertReportingStat : true, typeReporting : 'chart'};
     var offset = ($('.currentPage').val()*1);
     $('.closeChart').show();
     $('.printPreview').hide();
-    var order = {fieldName : 'id', type : 'ASC'};
-    getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting,fieldName);
+    getDataReporting(filter,rows,offset,properties,order);
     //$('.server').addClass('disabled');
   });
   $('.closeChart').click(function(){
@@ -312,6 +334,7 @@ $(document).ready(function(){
     $('.chartjs-hidden-iframe').remove();
   });
   $('.clickAction').click(function(){
+    var typeOfReportingId = $('.cmbTypeOfReporting').val();
     var currentPage = ($('.currentPage').val()*1);
     var buttonName = $(this).data('page');
     switch(buttonName) {
@@ -332,51 +355,47 @@ $(document).ready(function(){
     }
     if ($('.chartCanvas').is(':visible')) {
       $('.chartCanvas').hide();
-      var convertReporting = {convertReportingStat : true, typeReporting : 'chart'};
+      var properties = {typeOfReportingId : typeOfReportingId, convertReportingStat : true, typeReporting : 'chart'};
     }else {
-      var convertReporting = {convertReportingStat : false, typeReporting : false};
+      var properties = {typeOfReportingId : typeOfReportingId, convertReportingStat : false, typeReporting : false};
     }
-    var typeOfReportingId = $('.cmbTypeOfReporting').val();
-    var provinceId = $('.cmbProvince').val();
-    var cityId = $('.cmbCity').val();
     var minDate = $('.min').val();
     var maxDate = $('.max').val();
+    var filter ={minDate:minDate,maxDate:maxDate};
     var rows = ($('.rows').val()*1);
     //var page = ((currentPage * 1)-1);
     pagination(page, totalPage);
     var offset = ($('.currentPage').val()*1);
-    getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting,order,page);
+    getDataReporting(filter,rows,offset,properties,order,page);
   });
   $('.currentPage').keypress(function(event){
     if(event.keyCode == 13){
       if (page <= totalPage.totalPage) {
         var typeOfReportingId = $('.cmbTypeOfReporting').val();
-        var provinceId = $('.cmbProvince').val();
-        var cityId = $('.cmbCity').val();
         var minDate = $('.min').val();
         var maxDate = $('.max').val();
+        var filter ={minDate:minDate,maxDate:maxDate};
         var rows = ($('.rows').val()*1);
-        var convertReporting = {convertReportingStat : false, typeReporting : false};
+        var properties = {typeOfReportingId : typeOfReportingId, convertReportingStat : false, typeReporting : false};
         var currentPage = ($('.currentPage').val()*1);
         var page = $(this).val();
         var offset = ($('.currentPage').val()*1);
         var order = {fieldName : 'id', type : 'ASC'};
-        getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting,order,page);
+        getDataReporting(filter,rows,offset,properties,order,page);
         pagination(page, totalPage);
       }else {
       //alert('Oops!!! Something Wrong');
       var typeOfReportingId = $('.cmbTypeOfReporting').val();
-      var provinceId = $('.cmbProvince').val();
-      var cityId = $('.cmbCity').val();
       var minDate = $('.min').val();
       var maxDate = $('.max').val();
+      var filter ={minDate:minDate,maxDate:maxDate};
       var rows = ($('.rows').val()*1);
-      var convertReporting = {convertReportingStat : false, typeReporting : false};
+      var properties = {typeOfReportingId : typeOfReportingId, convertReportingStat : false, typeReporting : false};
       var currentPage = ($('.currentPage').val()*1);
       var page = totalPage.totalPage;
       var offset = ($('.currentPage').val()*1);
       var order = {fieldName : 'id', type : 'ASC'};
-      getDataReporting(typeOfReportingId,provinceId,cityId,minDate,maxDate,rows,offset,convertReporting,order,page);
+      getDataReporting(filter,rows,offset,properties,order,page);
       pagination(page, totalPage);
       }
     }
